@@ -38,59 +38,23 @@ var createScene = function(canvas, engine) {
   // Particle system
   var nb = 5;
   var size = 48;
-  var PS = new ParticleSystem(nb, size, scene);
+  var PS = new SolidParticleSystem(nb, size, scene);
   PS.mesh.material = mat;
 
   PS.start(2);
 
-  // positionFunction : defines the particle trajectory for this emitter
-  var positionFunction = function(positions) {
-    var idx;
-    for (var p = 0; p < PS.nb; p++) {
-      idx = p * 12;
-      // if a given triangle vertex has y < 0 then reset this quad positions
-      // quad vertex : [0,0] [1,0] [1,1] [0,1]
-      if (positions[idx + 1] < 0.0) {
-        positions[idx] = 0.0;             // vertex 0
-        positions[idx + 1] = 0.0;
-        positions[idx + 2] = 0.0;
-        positions[idx + 3] = PS.size;     // vertex 1
-        positions[idx + 4] = 0.0;
-        positions[idx + 5] = 0.0;
-        positions[idx + 6] = PS.size;     // vertex 2
-        positions[idx + 7] = PS.size;
-        positions[idx + 8] = 0.0;
-        positions[idx + 9] = 0.0;         // vertex 3
-        positions[idx + 10] = PS.size;
-        positions[idx + 11] = 0.0;
-        PS.vcts[p] = (new BABYLON.Vector3(Math.random() - 0.5, Math.random(), Math.random() - 0.5)).scaleInPlace(PS.vel);
-      }
-      // apply just gravity + velocity vector
-      var nbPt = 4;                         // nb vertex per particle : 3 for triangle, 4 for quad, etc
-      var posPart = nbPt * 3;               // nb positions per particle
-      //for (var pt = 0; pt < nbPt; pt++) {
-        //idx = p * posPart + pt * 3;
+  /*
+  var updateParticle = function(particle) {
+    PS.vcts[particle].y += PS.gravity + 1;              // increase y velocity by 1 + gravity
+    particle.position.addInplace(PS.vcts[particle]);    //set particle new position
 
-        PS.vcts[p].y += PS.gravity;       // increase velocity.y by gravity each frame
-
-        positions[idx] += PS.vcts[p].x;
-        positions[idx + 1] += PS.vcts[p].y + 1;
-        positions[idx + 2] += PS.vcts[p].z;
-
-        positions[idx + 3] += PS.vcts[p].x + PS.camAxisX.x * PS.size;
-
-
-
-
-
-      //}
-    }
   };
+  */
 
   //scene.debugLayer.show();
   // animation
   scene.registerBeforeRender(function() {
-    PS.animate(camera, positionFunction);
+    //PS.animate();
     pl.position = camera.position;
   });
 
