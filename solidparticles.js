@@ -38,21 +38,14 @@ var createScene = function(canvas, engine) {
 
   // Particle system
   var nb = 5000;
-  var size = 6;
+  var size = 16;
   var PS = new SolidParticleSystem(nb, size, scene);
   PS.mesh.material = mat;
 
   PS.mesh.position.x = 60;
+  console.log(PS.mesh.rotation);
 
   PS.start(8);
-
-  /*
-  var updateParticle = function(particle) {
-    PS.vcts[particle].y += PS.gravity + 1;              // increase y velocity by 1 + gravity
-    particle.position.addInplace(PS.vcts[particle]);    //set particle new position
-
-  };
-  */
 
   //scene.debugLayer.show();
   // animation

@@ -25,7 +25,7 @@ var SolidParticleSystem = function(nb, size, scene) {
     indices.push(p * 4, p * 4 + 1, p * 4 + 2);
     indices.push(p * 4, p * 4 + 2, p * 4 + 3);
     uvs.push(0,1, 1,1, 1,0, 0,0);
-    particles.push( {idx: p, position: new BABYLON.Vector3.Zero(), velocity: new BABYLON.Vector3.Zero()} );
+    particles.push( {idx: p, position: BABYLON.Vector3.Zero(), velocity: BABYLON.Vector3.Zero()} );
   }
   BABYLON.VertexData.ComputeNormals(positions, indices, normals);
   var vertexData = new BABYLON.VertexData();
@@ -109,12 +109,6 @@ SolidParticleSystem.prototype.animate = function() {
         positions[idx]     = particles[p].position.x + camAxisX.x * model[pt].x + camAxisY.x * model[pt].y + camAxisZ.x * model[pt].z;      
         positions[idx + 1] = particles[p].position.y + camAxisX.y * model[pt].x + camAxisY.y * model[pt].y + camAxisZ.y * model[pt].z; 
         positions[idx + 2] = particles[p].position.z + camAxisX.z * model[pt].x + camAxisY.z * model[pt].y + camAxisZ.z * model[pt].z;  
-        /*
-        positions[idx]     = particles[p].position.x + model[pt].x;
-        positions[idx + 1] = particles[p].position.y + model[pt].y;
-        positions[idx + 2] = particles[p].position.z + model[pt].z;
-        */
-
       }
     }
   };
@@ -138,6 +132,7 @@ SolidParticleSystem.prototype.updateParticle = function(particle) {
   if (particle.position.y < 0) {
     this.recycle(particle);
   }
-  particle.velocity.y += this.gravity;              // increase y velocity by 1 + gravity
+  particle.velocity.y += this.gravity;                // increase y velocity by 1 + gravity
   (particle.position).addInPlace(particle.velocity);      //set particle new position
+  particle.position.y += 1;
 };
