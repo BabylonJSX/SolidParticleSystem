@@ -6,7 +6,7 @@ var createScene = function(canvas, engine) {
   var scene = new BABYLON.Scene(engine);
   scene.clearColor = new BABYLON.Color3( .5, .5, .5);
   var camera = new BABYLON.ArcRotateCamera("camera1",  0, 0, 0, new BABYLON.Vector3(0, 0, -0), scene);
-  camera.setPosition(new BABYLON.Vector3(0, 5, -10));
+  camera.setPosition(new BABYLON.Vector3(0, 5, -100));
   camera.attachControl(canvas, true);
   var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(1, 0.5, 0), scene);
   light.intensity = 0.7;
@@ -17,6 +17,7 @@ var createScene = function(canvas, engine) {
 
 
   var mat = new BABYLON.StandardMaterial("mat1", scene);
+  mat.backFaceCulling = false;
   var texture = new BABYLON.Texture("/BJS/test/Tree.png", scene);
   mat.diffuseTexture = texture;
   mat.diffuseTexture.hasAlpha = true;
@@ -36,12 +37,12 @@ var createScene = function(canvas, engine) {
 
 
   // Particle system
-  var nb = 5;
-  var size = 48;
+  var nb = 1;
+  var size = 64;
   var PS = new SolidParticleSystem(nb, size, scene);
   PS.mesh.material = mat;
 
-  PS.start(2);
+  PS.start(1);
 
   /*
   var updateParticle = function(particle) {
