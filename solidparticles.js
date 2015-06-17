@@ -17,7 +17,7 @@ var createScene = function(canvas, engine) {
 
 
   var mat = new BABYLON.StandardMaterial("mat1", scene);
-  mat.backFaceCulling = false;
+  //mat.backFaceCulling = false;
   var texture = new BABYLON.Texture("/BJS/test/Tree.png", scene);
   mat.diffuseTexture = texture;
   mat.diffuseTexture.hasAlpha = true;
@@ -37,12 +37,14 @@ var createScene = function(canvas, engine) {
 
 
   // Particle system
-  var nb = 1;
-  var size = 64;
+  var nb = 5000;
+  var size = 6;
   var PS = new SolidParticleSystem(nb, size, scene);
   PS.mesh.material = mat;
 
-  PS.start(1);
+  PS.mesh.position.x = 60;
+
+  PS.start(8);
 
   /*
   var updateParticle = function(particle) {
@@ -55,7 +57,7 @@ var createScene = function(canvas, engine) {
   //scene.debugLayer.show();
   // animation
   scene.registerBeforeRender(function() {
-    //PS.animate();
+    PS.animate();
     pl.position = camera.position;
   });
 

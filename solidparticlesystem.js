@@ -83,7 +83,7 @@ SolidParticleSystem.prototype.start = function(vel) {
 // animate all the particles
 SolidParticleSystem.prototype.animate = function() {
   // set two orthogonal vectors to the cam-mesh axis
-  (this.camera.position).subtractToRef(this.mesh.position, this.camAxisY);
+  (this.camera.position).subtractToRef(this.mesh.position, this.camAxisZ);
   BABYLON.Vector3.CrossToRef(this.camAxisZ, this.axisX, this.camAxisY);
   BABYLON.Vector3.CrossToRef(this.camAxisZ, this.camAxisY, this.camAxisX);
   this.camAxisY.normalize();
@@ -105,9 +105,15 @@ SolidParticleSystem.prototype.animate = function() {
       system.updateParticle(particles[p]);   
       for (pt = 0; pt < nbPt; pt++) {
         idx = p * posPart + pt * 3;
+        
         positions[idx]     = particles[p].position.x + camAxisX.x * model[pt].x + camAxisY.x * model[pt].y + camAxisZ.x * model[pt].z;      
         positions[idx + 1] = particles[p].position.y + camAxisX.y * model[pt].x + camAxisY.y * model[pt].y + camAxisZ.y * model[pt].z; 
         positions[idx + 2] = particles[p].position.z + camAxisX.z * model[pt].x + camAxisY.z * model[pt].y + camAxisZ.z * model[pt].z;  
+        /*
+        positions[idx]     = particles[p].position.x + model[pt].x;
+        positions[idx + 1] = particles[p].position.y + model[pt].y;
+        positions[idx + 2] = particles[p].position.z + model[pt].z;
+        */
 
       }
     }
@@ -129,8 +135,8 @@ SolidParticleSystem.prototype.recycle = function(particle) {
 // will be called on each particle :
 // just set a particle position or velocity and recycle conditions
 SolidParticleSystem.prototype.updateParticle = function(particle) {
-  if (particle.position.y + this.size < 0) {
-    //this.recycle(particle);
+  if (particle.position.y < 0) {
+    this.recycle(particle);
   }
   particle.velocity.y += this.gravity;              // increase y velocity by 1 + gravity
   (particle.position).addInPlace(particle.velocity);      //set particle new position
