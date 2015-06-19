@@ -49,6 +49,9 @@ var SolidParticleSystem = function(nb, size, scene) {
   this.axisX = BABYLON.Axis.X;
   this.axisY = BABYLON.Axis.Y;
   this.camera = scene.activeCamera;
+  this.fakeCamPos = BABYLON.Vector3.Zero();
+  this.rotMatrix = new BABYLON.Matrix();
+  this.invertedMatrix = new BABYLON.Matrix();
 
 
 
@@ -83,7 +86,11 @@ SolidParticleSystem.prototype.start = function(vel) {
 // animate all the particles
 SolidParticleSystem.prototype.animate = function() {
   // set two orthogonal vectors to the cam-mesh axis
-  (this.camera.position).subtractToRef(this.mesh.position, this.camAxisZ);
+  BABYLON.Matrix.RotationYawPitchRollToRef(this.mesh.rotation.y, this.mesh.rotation.x, this.mesh.rotation.z, this.rotMatrix);
+  this.rotMatrix.invertToRef(this.invertedMatrix);
+  BABYLON.Vector3.TransformCoordinatesToRef(this.camera.position, this.invertedMatrix, this.fakeCamPos);
+
+  (this.fakeCamPos).subtractToRef(this.mesh.position, this.camAxisZ);
   BABYLON.Vector3.CrossToRef(this.camAxisZ, this.axisX, this.camAxisY);
   BABYLON.Vector3.CrossToRef(this.camAxisZ, this.camAxisY, this.camAxisX);
   this.camAxisY.normalize();
@@ -114,6 +121,7 @@ SolidParticleSystem.prototype.animate = function() {
   };
 
 this.mesh.updateMeshPositions(quadPositionFunction);
+this.mesh.refreshBoundingInfo();
 };
 
 

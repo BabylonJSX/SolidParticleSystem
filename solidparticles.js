@@ -6,7 +6,7 @@ var createScene = function(canvas, engine) {
   var scene = new BABYLON.Scene(engine);
   scene.clearColor = new BABYLON.Color3( .5, .5, .5);
   var camera = new BABYLON.ArcRotateCamera("camera1",  0, 0, 0, new BABYLON.Vector3(0, 0, -0), scene);
-  camera.setPosition(new BABYLON.Vector3(0, 5, -100));
+  camera.setPosition(new BABYLON.Vector3(0, 5, -500));
   camera.attachControl(canvas, true);
   var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(1, 0.5, 0), scene);
   light.intensity = 0.7;
@@ -42,16 +42,23 @@ var createScene = function(canvas, engine) {
   var PS = new SolidParticleSystem(nb, size, scene);
   PS.mesh.material = mat;
 
-  PS.mesh.position.x = 60;
-  console.log(PS.mesh.rotation);
-
+  //PS.mesh.position.x = 30;
+  
   PS.start(8);
 
   //scene.debugLayer.show();
   // animation
+
+  var k = 0;
   scene.registerBeforeRender(function() {
     PS.animate();
+    PS.mesh.rotation.x = k;
+    PS.mesh.rotation.y = k * 2;
+    PS.mesh.rotation.z = k * .5;
     pl.position = camera.position;
+    k += 0.01;
+    //console.log(PS.fakeCamPos);
+  ;
   });
 
   return scene;
