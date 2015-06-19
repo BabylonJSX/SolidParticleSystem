@@ -4,27 +4,28 @@
 
 var createScene = function(canvas, engine) {
   var scene = new BABYLON.Scene(engine);
-  scene.clearColor = new BABYLON.Color3( .5, .5, .5);
+  scene.clearColor = new BABYLON.Color3( .1, .2, .4);
   var camera = new BABYLON.ArcRotateCamera("camera1",  0, 0, 0, new BABYLON.Vector3(0, 0, -0), scene);
   camera.setPosition(new BABYLON.Vector3(0, 500, -500));
   camera.attachControl(canvas, true);
-  var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(1, 0.5, 0), scene);
-  light.intensity = 0.7;
+  var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(1, 1, 0), scene);
+  light.intensity = 0.9;
   var pl = new BABYLON.PointLight("pl", new BABYLON.Vector3(0, 0, 0), scene);
   pl.diffuse = new BABYLON.Color3(1, 1, 1);
-  pl.specular = new BABYLON.Color3(1, 0, 0);
+  pl.specular = new BABYLON.Color3(0.8, 0.7, 0);
   pl.intensity = 0.95;
 
 
+  var url = "http://jerome.bousquie.fr/BJS/images/sc-snowflakes1.png";
   var mat = new BABYLON.StandardMaterial("mat1", scene);
   //mat.backFaceCulling = false;
-  var texture = new BABYLON.Texture("/BJS/test/Tree.png", scene);
+  var texture = new BABYLON.Texture(url, scene);
   mat.diffuseTexture = texture;
   mat.diffuseTexture.hasAlpha = true;
   mat.diffuseTexture.getAlphaFromRGB = true;
   mat.useSpecularOverAlpha = false;
   mat.useAlphaFromDiffuseTexture = true;
-  mat.alpha = 0.8;
+  mat.alpha = 0.9;
 
   // ground and boxes
   var ground = BABYLON.Mesh.CreateGround("gd", 100, 100, 4, scene);
