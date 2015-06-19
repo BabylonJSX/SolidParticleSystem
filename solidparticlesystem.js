@@ -77,6 +77,7 @@ var SolidParticleSystem = function(nb, size, scene) {
 SolidParticleSystem.prototype.start = function(vel, bbsize) {
   for (var p = 0; p < this.nb; p++) {
     this.particles[p].velocity = (new BABYLON.Vector3(Math.random() - 0.5, Math.random(), Math.random() - 0.5)).scaleInPlace(vel);
+    this.particles[p].scale = (new BABYLON.Vector3(1, 1, 0)).scaleInPlace(Math.random() * this.size + 0.1);
   }
   this.mesh.getBoundingInfo()._update(BABYLON.Matrix.Scaling(bbsize));
   this.vel = vel;
@@ -136,7 +137,7 @@ SolidParticleSystem.prototype.recycle = function(particle) {
   this.recycleFunction(particle);
   particle.position = BABYLON.Vector3.Zero();   // à changer en : mesh position
   particle.velocity = (new BABYLON.Vector3(Math.random() - 0.5, Math.random(), Math.random() - 0.5)).scaleInPlace(this.vel);
-  particle.scale = (new BABYLON.Vector3(1, 1, 0)).scaleInPlace(Math.random() * this.size + 0.1);
+  particle.scale = (new BABYLON.Vector3(1, 1, 0)).scaleInPlace(Math.random() * this.size + 1);
 };
 
 
@@ -149,5 +150,5 @@ SolidParticleSystem.prototype.updateParticle = function(particle) {
   }
   particle.velocity.y += this.gravity;                // increase y velocity by 1 + gravity
   (particle.position).addInPlace(particle.velocity);      //set particle new position
-  particle.position.y += 1;
+  particle.position.y += this.vel / 2;
 };
