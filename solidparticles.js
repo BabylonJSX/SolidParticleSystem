@@ -21,6 +21,10 @@ var createScene = function(canvas, engine) {
   var texture = new BABYLON.Texture("/BJS/test/Tree.png", scene);
   mat.diffuseTexture = texture;
   mat.diffuseTexture.hasAlpha = true;
+  mat.diffuseTexture.getAlphaFromRGB = true;
+  mat.useSpecularOverAlpha = false;
+  mat.useAlphaFromDiffuseTexture = true;
+  mat.alpha = 0.8;
 
   // ground and boxes
   var ground = BABYLON.Mesh.CreateGround("gd", 100, 100, 4, scene);
@@ -38,27 +42,23 @@ var createScene = function(canvas, engine) {
 
   // Particle system
   var nb = 5000;
-  var size = 16;
+  var size = 6;
   var PS = new SolidParticleSystem(nb, size, scene);
   PS.mesh.material = mat;
 
-  //PS.mesh.position.x = 30;
-  
-  PS.start(8);
+  //PS.mesh.position.x = 80;
+
+  console.log(PS.mesh.getBoundingInfo());
+  PS.mesh.getBoundingInfo()._update(BABYLON.Matrix.Scaling(new BABYLON.Vector3(300, 300, 300)));
+  console.log(PS.mesh.getBoundingInfo());
+  var boundingBoxSize = new BABYLON.Vector3(300, 300, 300);
+  PS.start(8, boundingBoxSize);
 
   //scene.debugLayer.show();
   // animation
-
-  var k = 0;
   scene.registerBeforeRender(function() {
     PS.animate();
-    PS.mesh.rotation.x = k;
-    PS.mesh.rotation.y = k * 2;
-    PS.mesh.rotation.z = k * .5;
     pl.position = camera.position;
-    k += 0.01;
-    //console.log(PS.fakeCamPos);
-  ;
   });
 
   return scene;
