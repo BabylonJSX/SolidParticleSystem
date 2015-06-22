@@ -41,7 +41,7 @@ var createScene = function(canvas, engine) {
 
 
   // Particle system
-  var nb = 5000;
+  var nb = 500;
   var size = 4;
   var PS = new SolidParticleSystem(nb, size, scene);
   PS.mesh.material = mat;

@@ -25,7 +25,14 @@ var SolidParticleSystem = function(nb, size, scene) {
     indices.push(p * 4, p * 4 + 1, p * 4 + 2);
     indices.push(p * 4, p * 4 + 2, p * 4 + 3);
     uvs.push(0,1, 1,1, 1,0, 0,0);
-    particles.push( {idx: p, nbPT: quad.length, position: BABYLON.Vector3.Zero(), scale: new BABYLON.Vector3(1 ,1, 1), velocity: BABYLON.Vector3.Zero()} );
+    particles.push( {
+      idx: p, 
+      nbPT: quad.length, 
+      position: BABYLON.Vector3.Zero(), 
+      rotation : BABYLON.Vector3.Zero(),
+      scale: new BABYLON.Vector3(1 ,1, 1), 
+      velocity: BABYLON.Vector3.Zero()
+      } );
   }
   BABYLON.VertexData.ComputeNormals(positions, indices, normals);
   var vertexData = new BABYLON.VertexData();
@@ -53,6 +60,7 @@ var SolidParticleSystem = function(nb, size, scene) {
   this.fakeCamPos = BABYLON.Vector3.Zero();
   this.rotMatrix = new BABYLON.Matrix();
   this.invertedMatrix = new BABYLON.Matrix();
+  this.rotated = BABYLON.Vector3.Zero();
 
 
 
@@ -108,25 +116,39 @@ SolidParticleSystem.prototype.setParticles = function(billboard) {
   }
 
   var system = this;
+  var rotMatrix = this.rotMatrix;
+  var rotated = this.rotated;
   var vertexPositionFunction = function(positions) {
     var idx, pt, sizeX, sizeY, sizeZ, nbPT; //  nbPT nb vertex per particle : 3 for triangle, 4 for quad, etc         
     var posPart;                            // nb positions per particle = 3 * nbPT
+    var particle;
     
     // particle loop
     for (var p = 0; p < nb; p++) { 
-      nbPT = particles[p].nbPT;
+      particle = particles[p];
+
+      // particle rotation matrix
+      if (billboard) {
+        particle.rotation.x = 0.0;
+        particle.rotation.y = 0.0;
+      }
+      BABYLON.Matrix.RotationYawPitchRollToRef(particle.rotation.y, particle.rotation.x, particle.rotation.z, rotMatrix);
+
+      nbPT = particle.nbPT;
       posPart = nbPT * 3
-      system.updateParticle(particles[p]);   // call to custom user function to update the particle position
+      system.updateParticle(particle);   // call to custom user function to update the particle position
       for (pt = 0; pt < nbPT; pt++) {
         idx = p * posPart + pt * 3;
 
-        sizeX = model[pt].x * particles[p].scale.x;
-        sizeY = model[pt].y * particles[p].scale.y;
-        sizeZ = model[pt].z * particles[p].scale.z;
+        BABYLON.Vector3.TransformCoordinatesToRef(model[pt], rotMatrix, rotated);
+
+        sizeX = rotated.x * particle.scale.x;
+        sizeY = rotated.y * particle.scale.y;
+        sizeZ = rotated.z * particle.scale.z;
         
-        positions[idx]     = particles[p].position.x + camAxisX.x * sizeX + camAxisY.x * sizeY + camAxisZ.x * sizeZ;      
-        positions[idx + 1] = particles[p].position.y + camAxisX.y * sizeX + camAxisY.y * sizeY + camAxisZ.y * sizeZ; 
-        positions[idx + 2] = particles[p].position.z + camAxisX.z * sizeX + camAxisY.z * sizeY + camAxisZ.z * sizeZ;  
+        positions[idx]     = particle.position.x + camAxisX.x * sizeX + camAxisY.x * sizeY + camAxisZ.x * sizeZ;      
+        positions[idx + 1] = particle.position.y + camAxisX.y * sizeX + camAxisY.y * sizeY + camAxisZ.y * sizeZ; 
+        positions[idx + 2] = particle.position.z + camAxisX.z * sizeX + camAxisY.z * sizeY + camAxisZ.z * sizeZ;  
       }
     }
 
@@ -178,4 +200,6 @@ SolidParticleSystem.prototype.updateParticle = function(particle) {
   particle.velocity.y -= 0.01;                            // apply gravity to y : -0.01
   (particle.position).addInPlace(particle.velocity);      //set particle new position
   particle.position.y += 1;
+  particle.rotation.y += 0.01;
+  particle.rotation.z += 0.1;
 };
