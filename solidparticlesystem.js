@@ -1,6 +1,6 @@
 "use strict";
 
-// Particle system
+// Solid Particle System : SPS
 
 var SolidParticleSystem = function(nb, size, scene) {
   var positions = [];
@@ -57,9 +57,11 @@ var SolidParticleSystem = function(nb, size, scene) {
   var index = 0;
   for (var p = 0; p < nb; p ++) {
     var model = models[(p+1) % 2];
+    var idxpos = positions.length;
     model.builder(index, model.shape, positions, indices, uvs);
     particles.push( {
       idx: p, 
+      pos: idxpos,
       shape: model.shape, 
       position: BABYLON.Vector3.Zero(), 
       rotation : BABYLON.Vector3.Zero(),
@@ -104,14 +106,13 @@ var SolidParticleSystem = function(nb, size, scene) {
     // reset particle at initial position
     var idx, pt;
     var nbPT = particle.shape.length;             // nb vertex per particle : 3 for triangle, 4 for quad, etc
-    var index = 0;
+    var index = particle.pos;
     for (pt = 0; pt < nbPT; pt++) {
       idx = index + pt * 3;
       positions[idx] = particle.shape[pt].x;      
       positions[idx + 1] = particle.shape[pt].y;
       positions[idx + 2] = particle.shape[pt].z;
     }
-    index = idx + 3;
   };
 
   this.resetParticle = resetParticle;
@@ -191,7 +192,7 @@ SolidParticleSystem.prototype.setParticles = function(billboard) {
 
   };
  
-this.mesh.updateMeshPositions(vertexPositionFunction, false);
+this.mesh.updateMeshPositions(vertexPositionFunction);
 //this.mesh.refreshBoundingInfo();
 };
 
