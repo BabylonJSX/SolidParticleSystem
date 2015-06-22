@@ -19,6 +19,7 @@ var createScene = function(canvas, engine) {
   var url = "http://jerome.bousquie.fr/BJS/images/sc-snowflakes1.png";
   var mat = new BABYLON.StandardMaterial("mat1", scene);
   //mat.backFaceCulling = false;
+  //mat.wireframe = true;
   var texture = new BABYLON.Texture(url, scene);
   mat.diffuseTexture = texture;
   mat.diffuseTexture.hasAlpha = true;
@@ -42,14 +43,14 @@ var createScene = function(canvas, engine) {
 
   // Particle system
   var nb = 500;
-  var size = 4;
+  var size = 5;
   var PS = new SolidParticleSystem(nb, size, scene);
   PS.mesh.material = mat;
   PS.mesh.freezeWorldMatrix();
 
   //PS.mesh.position.x = 80;
 
-  PS.mesh.getBoundingInfo()._update(BABYLON.Matrix.Scaling(new BABYLON.Vector3(300, 300, 300)));
+  //PS.mesh.getBoundingInfo()._update(BABYLON.Matrix.Scaling(new BABYLON.Vector3(300, 300, 300)));
 
   PS.initParticles();
 
