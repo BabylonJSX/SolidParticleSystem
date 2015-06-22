@@ -22,7 +22,6 @@ var createScene = function(canvas, engine) {
   var texture = new BABYLON.Texture(url, scene);
   mat.diffuseTexture = texture;
   mat.diffuseTexture.hasAlpha = true;
-  mat.diffuseTexture.getAlphaFromRGB = true;
   mat.useSpecularOverAlpha = false;
   mat.useAlphaFromDiffuseTexture = true;
   mat.alpha = 0.9;
@@ -46,19 +45,18 @@ var createScene = function(canvas, engine) {
   var size = 4;
   var PS = new SolidParticleSystem(nb, size, scene);
   PS.mesh.material = mat;
+  PS.mesh.freezeWorldMatrix();
 
   //PS.mesh.position.x = 80;
 
-  console.log(PS.mesh.getBoundingInfo());
   PS.mesh.getBoundingInfo()._update(BABYLON.Matrix.Scaling(new BABYLON.Vector3(300, 300, 300)));
-  console.log(PS.mesh.getBoundingInfo());
-  var boundingBoxSize = new BABYLON.Vector3(300, 300, 300);
-  PS.start(4, boundingBoxSize);
+
+  PS.initParticles();
 
   //scene.debugLayer.show();
   // animation
   scene.registerBeforeRender(function() {
-    PS.animate();
+    PS.setParticles(true);
     pl.position = camera.position;
   });
 
