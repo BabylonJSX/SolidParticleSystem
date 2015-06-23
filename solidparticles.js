@@ -44,9 +44,10 @@ var createScene = function(canvas, engine) {
   // Particle system
   var nb = 500;
   var size = 5;
-  var PS = new SolidParticleSystem(nb, size, scene);
+  var PS = new SolidParticleSystem('SPS', nb, size, scene);
   PS.mesh.material = mat;
   PS.mesh.freezeWorldMatrix();
+  //PS.mesh.freezeNormals();
 
   //PS.mesh.position.x = 80;
 

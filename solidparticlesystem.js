@@ -2,7 +2,7 @@
 
 // Solid Particle System : SPS
 
-var SolidParticleSystem = function(nb, size, scene) {
+var SolidParticleSystem = function(name, nb, size, scene) {
   var positions = [];
   var indices = [];
   var normals = [];
@@ -78,83 +78,89 @@ var SolidParticleSystem = function(nb, size, scene) {
   vertexData.normals = normals;
   vertexData.uvs = uvs;
 
-  var mesh = new BABYLON.Mesh("mesh", scene);
+  var mesh = new BABYLON.Mesh(name, scene);
   vertexData.applyToMesh(mesh, true);
 
   
   this.size = size;
   this.nb = nb;
   this.particles = particles;
-  this.vel = 0.0;
   this.mesh = mesh;
-  this.camAxisZ = BABYLON.Vector3.Zero();
-  this.camAxisY = BABYLON.Vector3.Zero();
-  this.camAxisX = BABYLON.Vector3.Zero();
-  this.axisX = BABYLON.Axis.X;
-  this.axisY = BABYLON.Axis.Y;
-  this.axisZ = BABYLON.Axis.Z;
-  this.camera = scene.activeCamera;
-  this.fakeCamPos = BABYLON.Vector3.Zero();
-  this.rotMatrix = new BABYLON.Matrix();
-  this.invertedMatrix = new BABYLON.Matrix();
-  this.rotated = BABYLON.Vector3.Zero();
+  this.counter = 0;
 
 
+  // private members
+  this._positions = positions;
+  this._indices = indices;
+  this._uvs = uvs;
+  this._cam_axisZ = BABYLON.Vector3.Zero();
+  this._cam_axisY = BABYLON.Vector3.Zero();
+  this._cam_axisX = BABYLON.Vector3.Zero();
+  this._axisX = BABYLON.Axis.X;
+  this._axisY = BABYLON.Axis.Y;
+  this._axisZ = BABYLON.Axis.Z;
+  this._camera = scene.activeCamera;
+  this._fakeCamPos = BABYLON.Vector3.Zero();
+  this._rotMatrix = new BABYLON.Matrix();
+  this._invertedMatrix = new BABYLON.Matrix();
+  this._rotated = BABYLON.Vector3.Zero();
+};
 
-  // reset a particle to its original model
-  var resetParticle = function(particle) {
-    // reset particle at initial position
-    var idx, pt;
-    var nbPT = particle.shape.length;             // nb vertex per particle : 3 for triangle, 4 for quad, etc
-    var index = particle.pos;
-    for (pt = 0; pt < nbPT; pt++) {
-      idx = index + pt * 3;
-      positions[idx] = particle.shape[pt].x;      
-      positions[idx + 1] = particle.shape[pt].y;
-      positions[idx + 2] = particle.shape[pt].z;
-    }
-  };
 
-  this.resetParticle = resetParticle;
+SolidParticleSystem.prototype.Model = {
+  CreateTriangles: 0
+
+};
+
+
+// reset a particle to its just built status
+SolidParticleSystem.prototype.resetParticle = function(particle) {
+  var idx, pt;
+  var nbPT = particle.shape.length;           
+  var index = particle.pos;
+  for (pt = 0; pt < nbPT; pt++) {
+    idx = index + pt * 3;
+    this._positions[idx] = particle.shape[pt].x;      
+    this._positions[idx + 1] = particle.shape[pt].y;
+    this._positions[idx + 2] = particle.shape[pt].z;
+  }
 };
 
 
 
 
-
-
-// animate all the particles
+// set all the particles
 SolidParticleSystem.prototype.setParticles = function(billboard) {
 
   var nb = this.nb;
   var particles = this.particles;
   //var model = this.model;
-  var camAxisX = this.axisX;
-  var camAxisY = this.axisY;
-  var camAxisZ = this.axisZ;
+  var _cam_axisX = this._axisX;
+  var _cam_axisY = this._axisY;
+  var _cam_axisZ = this._axisZ;
 
   if (billboard) {    // the particles will always face the camera
     
     // compute a fake camera position : un-rotate the camera position by the current mesh rotation
-    BABYLON.Matrix.RotationYawPitchRollToRef(this.mesh.rotation.y, this.mesh.rotation.x, this.mesh.rotation.z, this.rotMatrix);
-    this.rotMatrix.invertToRef(this.invertedMatrix);
-    BABYLON.Vector3.TransformCoordinatesToRef(this.camera.position, this.invertedMatrix, this.fakeCamPos);
+    BABYLON.Matrix.RotationYawPitchRollToRef(this.mesh.rotation.y, this.mesh.rotation.x, this.mesh.rotation.z, this._rotMatrix);
+    this._rotMatrix.invertToRef(this._invertedMatrix);
+    BABYLON.Vector3.TransformCoordinatesToRef(this._camera.position, this._invertedMatrix, this._fakeCamPos);
     
-    // set two orthogonal vectors (camAxisX and and camAxisY) to the cam-mesh axis (camAxisZ)
-    (this.fakeCamPos).subtractToRef(this.mesh.position, this.camAxisZ);
-    BABYLON.Vector3.CrossToRef(this.camAxisZ, this.axisX, this.camAxisY);
-    BABYLON.Vector3.CrossToRef(this.camAxisZ, this.camAxisY, this.camAxisX);
-    this.camAxisY.normalize();
-    this.camAxisX.normalize();
+    // set two orthogonal vectors (_cam_axisX and and _cam_axisY) to the cam-mesh axis (_cam_axisZ)
+    (this._fakeCamPos).subtractToRef(this.mesh.position, this._cam_axisZ);
+    BABYLON.Vector3.CrossToRef(this._cam_axisZ, this._axisX, this._cam_axisY);
+    BABYLON.Vector3.CrossToRef(this._cam_axisZ, this._cam_axisY, this._cam_axisX);
+    this._cam_axisY.normalize();
+    this._cam_axisX.normalize();
 
-    camAxisX = this.camAxisX;
-    camAxisY = this.camAxisY;
-    camAxisZ = this.camAxisZ;
+    _cam_axisX = this._cam_axisX;
+    _cam_axisY = this._cam_axisY;
+    _cam_axisZ = this._cam_axisZ;
   }
 
   var system = this;
-  var rotMatrix = this.rotMatrix;
-  var rotated = this.rotated;
+  var _rotMatrix = this._rotMatrix;
+  var _rotated = this._rotated;
   var vertexPositionFunction = function(positions) {
     var idx, pt, sizeX, sizeY, sizeZ, nbPT; //  nbPT nb vertex per particle : 3 for triangle, 4 for quad, etc         
     var posPart;                            // nb positions per particle = 3 * nbPT
@@ -170,29 +176,29 @@ SolidParticleSystem.prototype.setParticles = function(billboard) {
         particle.rotation.x = 0.0;
         particle.rotation.y = 0.0;
       }
-      BABYLON.Matrix.RotationYawPitchRollToRef(particle.rotation.y, particle.rotation.x, particle.rotation.z, rotMatrix);
+      BABYLON.Matrix.RotationYawPitchRollToRef(particle.rotation.y, particle.rotation.x, particle.rotation.z, _rotMatrix);
 
       nbPT = particle.shape.length;
       system.updateParticle(particle);   // call to custom user function to update the particle position
       for (pt = 0; pt < nbPT; pt++) {
         idx = index + pt * 3;
 
-        BABYLON.Vector3.TransformCoordinatesToRef(particle.shape[pt], rotMatrix, rotated);
+        BABYLON.Vector3.TransformCoordinatesToRef(particle.shape[pt], _rotMatrix, _rotated);
 
-        sizeX = rotated.x * particle.scale.x;
-        sizeY = rotated.y * particle.scale.y;
-        sizeZ = rotated.z * particle.scale.z;
+        sizeX = _rotated.x * particle.scale.x;
+        sizeY = _rotated.y * particle.scale.y;
+        sizeZ = _rotated.z * particle.scale.z;
         
-        positions[idx]     = particle.position.x + camAxisX.x * sizeX + camAxisY.x * sizeY + camAxisZ.x * sizeZ;      
-        positions[idx + 1] = particle.position.y + camAxisX.y * sizeX + camAxisY.y * sizeY + camAxisZ.y * sizeZ; 
-        positions[idx + 2] = particle.position.z + camAxisX.z * sizeX + camAxisY.z * sizeY + camAxisZ.z * sizeZ; 
+        positions[idx]     = particle.position.x + _cam_axisX.x * sizeX + _cam_axisY.x * sizeY + _cam_axisZ.x * sizeZ;      
+        positions[idx + 1] = particle.position.y + _cam_axisX.y * sizeX + _cam_axisY.y * sizeY + _cam_axisZ.y * sizeZ; 
+        positions[idx + 2] = particle.position.z + _cam_axisX.z * sizeX + _cam_axisY.z * sizeY + _cam_axisZ.z * sizeZ; 
       }
       index = idx + 3;
     }
 
   };
- 
-this.mesh.updateMeshPositions(vertexPositionFunction);
+
+this.mesh.updateMeshPositions(vertexPositionFunction, !this.mesh._areNormalsFrozen);
 //this.mesh.refreshBoundingInfo();
 };
 
@@ -223,7 +229,6 @@ SolidParticleSystem.prototype.recycleParticle = function(particle) {
   particle.position = BABYLON.Vector3.Zero();  
   particle.velocity = (new BABYLON.Vector3(Math.random() - 0.5, Math.random(), Math.random() - 0.5)).scaleInPlace(2);
   particle.scale = (new BABYLON.Vector3(1, 1, 0)).scaleInPlace(Math.random() * this.size + 1);
-  this.resetParticle(particle);
 };
 
 
