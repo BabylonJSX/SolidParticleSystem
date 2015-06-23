@@ -6,7 +6,7 @@ var createScene = function(canvas, engine) {
   var scene = new BABYLON.Scene(engine);
   scene.clearColor = new BABYLON.Color3( .1, .2, .4);
   var camera = new BABYLON.ArcRotateCamera("camera1",  0, 0, 0, new BABYLON.Vector3(0, 0, -0), scene);
-  camera.setPosition(new BABYLON.Vector3(0, 10, -50));
+  camera.setPosition(new BABYLON.Vector3(0, 100, -200));
   camera.attachControl(canvas, true);
   var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(1, 1, 0), scene);
   light.intensity = 0.9;
@@ -21,11 +21,12 @@ var createScene = function(canvas, engine) {
   //mat.backFaceCulling = false;
   //mat.wireframe = true;
   var texture = new BABYLON.Texture(url, scene);
-  mat.diffuseTexture = texture;
-  mat.diffuseTexture.hasAlpha = true;
-  mat.useSpecularOverAlpha = false;
-  mat.useAlphaFromDiffuseTexture = true;
+  //mat.diffuseTexture = texture;
+  //mat.diffuseTexture.hasAlpha = true;
+  //mat.useSpecularOverAlpha = false;
+  //mat.useAlphaFromDiffuseTexture = true;
   mat.alpha = 0.9;
+  mat.diffuseColor = BABYLON.Color3.Red();
 
   // ground and boxes
   var ground = BABYLON.Mesh.CreateGround("gd", 100, 100, 4, scene);
@@ -45,15 +46,16 @@ var createScene = function(canvas, engine) {
   var nb = 500;
   var size = 6;
   var PS = new SolidParticleSystem('SPS', scene);
-  PS.addTriangles(1, 5);
-  PS.build();
-  PS.mesh.material = mat;
-  //PS.mesh.freezeWorldMatrix();
-  //PS.mesh.freezeNormals();
+  PS.addTriangles(500, 1);
+  PS.addQuads(500, 2);
+  var mesh = PS.buildMesh();
+  mesh.material = mat;
+  mesh.freezeWorldMatrix();
+  //mesh.freezeNormals();
 
-  //PS.mesh.position.x = 80;
+  //mesh.position.x = 80;
 
-  //PS.mesh.getBoundingInfo()._update(BABYLON.Matrix.Scaling(new BABYLON.Vector3(300, 300, 300)));
+  //mesh.getBoundingInfo()._update(BABYLON.Matrix.Scaling(new BABYLON.Vector3(300, 300, 300)));
 
   PS.initParticles();
 
