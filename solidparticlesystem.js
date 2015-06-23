@@ -2,15 +2,14 @@
 
 // Solid Particle System : SPS
 
-var SolidParticleSystem = function(name, nb, size, scene) {
+var SolidParticleSystem = function(name, scene) {
   var positions = [];
   var indices = [];
   var normals = [];
   var uvs = [];
   var particles = [];
-  var half = size / 2;
 
-
+/*
   // model shapes
   // quad
   var quadShape = [ 
@@ -80,19 +79,20 @@ var SolidParticleSystem = function(name, nb, size, scene) {
 
   var mesh = new BABYLON.Mesh(name, scene);
   vertexData.applyToMesh(mesh, true);
-
+*/
   
-  this.size = size;
-  this.nb = nb;
   this.particles = particles;
-  this.mesh = mesh;
   this.counter = 0;
 
 
   // private members
+  this._scene = scene;
   this._positions = positions;
   this._indices = indices;
+  this._normals = normals;
   this._uvs = uvs;
+  this._partCount = 0;
+  this._index = 0;  // indices index
   this._cam_axisZ = BABYLON.Vector3.Zero();
   this._cam_axisY = BABYLON.Vector3.Zero();
   this._cam_axisX = BABYLON.Vector3.Zero();
@@ -106,11 +106,58 @@ var SolidParticleSystem = function(name, nb, size, scene) {
   this._rotated = BABYLON.Vector3.Zero();
 };
 
-
-SolidParticleSystem.prototype.Model = {
-  CreateTriangles: 0
-
+// build the SPS mesh 
+SolidParticleSystem.prototype.build  = function() {
+  BABYLON.VertexData.ComputeNormals(this._positions, this._indices, this._normals);
+  var vertexData = new BABYLON.VertexData();
+  vertexData.positions = this._positions;
+  vertexData.indices = this._indices;
+  vertexData.normals = this._normals;
+  vertexData.uvs = this._uvs;
+  var mesh = new BABYLON.Mesh(name, this._scene);
+  vertexData.applyToMesh(mesh, true);
+  this.mesh = mesh;
 };
+
+
+// add a particle object in particles array
+SolidParticleSystem.prototype.addParticle = function(p, idxpos, shape) {
+  this.particles.push( {
+    idx: p, 
+    pos: idxpos,
+    shape: shape, 
+    position: BABYLON.Vector3.Zero(), 
+    rotation : BABYLON.Vector3.Zero(),
+    scale: new BABYLON.Vector3(1 ,1, 1), 
+    velocity: BABYLON.Vector3.Zero()
+  } );
+};
+
+
+SolidParticleSystem.prototype.addTriangles = function(nb, size) {
+  var half = size / 2;
+  var h = size * Math.sqrt(3) / 4;
+  var triangleShape = [
+    new BABYLON.Vector3(-half, -h, 0),
+    new BABYLON.Vector3(half, -h, 0),
+    new BABYLON.Vector3(0, h, 0)
+  ];
+  var triangleBuilder = function(p, shape, positions, indices, uvs) {
+    positions.push(shape[0].x, shape[0].y, shape[0].z);
+    positions.push(shape[1].x, shape[1].y, shape[1].z);
+    positions.push(shape[2].x, shape[2].y, shape[2].z);
+    indices.push(p, p + 1, p + 2);
+    uvs.push(0,1, 1,1, 0.5,0);
+  };
+  for (var i = 0; i < nb; i++) {
+    triangleBuilder(this._index, triangleShape, this._positions, this._indices, this._uvs);
+    var idxpos = this._positions.length;
+    this.addParticle(this._partCount + i, this._positions.length, triangleShape);
+    this._index += triangleShape.length;
+  }
+  this._partCount += nb;
+};
+
 
 
 // reset a particle to its just built status
