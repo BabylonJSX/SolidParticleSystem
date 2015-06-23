@@ -43,11 +43,8 @@ var createScene = function(canvas, engine) {
 
 
   // Particle system
-  var nb = 500;
-  var size = 6;
   var PS = new SolidParticleSystem('SPS', scene);
-  PS.addTriangles(500, 1);
-  PS.addQuads(500, 2);
+  PS.addCubes(300, 3);
   var mesh = PS.buildMesh();
   mesh.material = mat;
   mesh.freezeWorldMatrix();
@@ -62,7 +59,7 @@ var createScene = function(canvas, engine) {
   //scene.debugLayer.show();
   // animation
   scene.registerBeforeRender(function() {
-    PS.setParticles(true);
+    PS.setParticles(false);
     pl.position = camera.position;
   });
 

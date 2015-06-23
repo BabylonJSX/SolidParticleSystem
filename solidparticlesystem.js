@@ -113,6 +113,64 @@ SolidParticleSystem.prototype.addQuads = function(nb, size) {
 };
 
 
+SolidParticleSystem.prototype.addCubes = function(nb, size) {
+  var half = size / 2;
+  var cubeShape = [ 
+    // front face
+    new BABYLON.Vector3(-half, -half, -half), 
+    new BABYLON.Vector3(half, -half, -half),
+    new BABYLON.Vector3(half, half, -half),
+    new BABYLON.Vector3(-half, half, -half),
+    //back face
+    new BABYLON.Vector3(half, -half, half), 
+    new BABYLON.Vector3(-half, -half, half),
+    new BABYLON.Vector3(-half, half, half),
+    new BABYLON.Vector3(half, half, half),   
+    // left face
+    new BABYLON.Vector3(-half, -half, half), 
+    new BABYLON.Vector3(-half, -half, -half),
+    new BABYLON.Vector3(-half, half, -half),
+    new BABYLON.Vector3(-half, half, half),
+    // right face 
+    new BABYLON.Vector3(half, -half, -half), 
+    new BABYLON.Vector3(half, -half, half),
+    new BABYLON.Vector3(half, half, half),
+    new BABYLON.Vector3(half, half, -half),
+    // top face
+    new BABYLON.Vector3(-half, half, -half), 
+    new BABYLON.Vector3(half, half, -half),
+    new BABYLON.Vector3(half, half, half),
+    new BABYLON.Vector3(-half, half, half),
+    // bottom face
+    new BABYLON.Vector3(-half, -half, half), 
+    new BABYLON.Vector3(half, -half, half),
+    new BABYLON.Vector3(half, -half, -half),
+    new BABYLON.Vector3(-half, -half, -half)    
+  ];
+
+  var cubeBuilder = function(p, shape, positions, indices, uvs) { 
+    var i;
+    for (i = 0; i < 24; i++) {
+      positions.push(shape[i].x, shape[i].y, shape[i].z);
+    }
+    var j;
+    for (i = 0; i < 6; i++) {
+      j = i * 4;
+      indices.push(p + j, p + j + 1, p + j + 2);
+      indices.push(p + j, p + j + 2, p + j + 3);
+      uvs.push(0,1, 1,1, 1,0, 0,0);
+    }
+  };
+  for (var i = 0; i < nb; i++) {
+    cubeBuilder(this._index, cubeShape, this._positions, this._indices, this._uvs);
+    var idxpos = this._positions.length;
+    this.addParticle(this.nbParticle + i, this._positions.length, cubeShape);
+    this._index += cubeShape.length;
+  }
+  this.nbParticle += nb;
+};
+
+
 // reset a particle to its just built status
 SolidParticleSystem.prototype.resetParticle = function(particle) {
   var idx, pt;
@@ -134,7 +192,6 @@ SolidParticleSystem.prototype.setParticles = function(billboard) {
 
   var nb = this.nbParticle;
   var particles = this.particles;
-  //var model = this.model;
   var _cam_axisX = this._axisX;
   var _cam_axisY = this._axisY;
   var _cam_axisZ = this._axisZ;
@@ -226,7 +283,7 @@ SolidParticleSystem.prototype.initParticles = function() {
 SolidParticleSystem.prototype.recycleParticle = function(particle) {
   particle.position = BABYLON.Vector3.Zero();  
   particle.velocity = (new BABYLON.Vector3(Math.random() - 0.5, Math.random(), Math.random() - 0.5)).scaleInPlace(1);
-  particle.scale = (new BABYLON.Vector3(1, 1, 0)).scaleInPlace(Math.random() * 3 + 1);
+  particle.scale = (new BABYLON.Vector3(1, 1, 1)).scaleInPlace(Math.random() * 3 + 1);
 };
 
 
@@ -240,6 +297,8 @@ SolidParticleSystem.prototype.updateParticle = function(particle) {
   particle.velocity.y -= 0.01;                            // apply gravity to y : -0.01
   (particle.position).addInPlace(particle.velocity);      //set particle new position
   particle.position.y += 1;
-  var sign = (particle.idx % 2 == 0) ? 1 : -1;
+  var sign = (particle._idx % 2 == 0) ? 1 : -1;
   particle.rotation.z += 0.1 * sign;
+  particle.rotation.x += 0.05 * sign;
+  particle.rotation.y += 0.008 * sign;
 };
