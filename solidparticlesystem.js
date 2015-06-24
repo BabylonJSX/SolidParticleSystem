@@ -6,7 +6,7 @@ var SolidParticleSystem = function(name, scene) {
 
   // public members  
   this.particles = [];
-  this.nbParticle = 0;
+  this.nbParticles = 0;
   this.counter = 0;
 
   // private members
@@ -45,11 +45,12 @@ SolidParticleSystem.prototype.buildMesh  = function() {
 
 
 // add a particle object in particles array
-SolidParticleSystem.prototype.addParticle = function(p, idxpos, shape) {
+SolidParticleSystem.prototype.addParticle = function(p, idxpos, shape, shapeId) {
   this.particles.push( {
-    _idx: p, 
+    idx: p, 
     _pos: idxpos,
     _shape: shape, 
+    shapeId: shapeId,
     position: BABYLON.Vector3.Zero(), 
     rotation : BABYLON.Vector3.Zero(),
     scale: new BABYLON.Vector3(1 ,1, 1), 
@@ -60,6 +61,7 @@ SolidParticleSystem.prototype.addParticle = function(p, idxpos, shape) {
 
 // Pre-build model : triangle
 SolidParticleSystem.prototype.addTriangles = function(nb, size) {
+  var shapeId = 0;
   var half = size / 2;
   var h = size * Math.sqrt(3) / 4;
   var triangleShape = [
@@ -77,15 +79,16 @@ SolidParticleSystem.prototype.addTriangles = function(nb, size) {
   for (var i = 0; i < nb; i++) {
     triangleBuilder(this._index, triangleShape, this._positions, this._indices, this._uvs);
     var idxpos = this._positions.length;
-    this.addParticle(this.nbParticle + i, this._positions.length, triangleShape);
+    this.addParticle(this.nbParticles + i, this._positions.length, triangleShape, shapeId);
     this._index += triangleShape.length;
   }
-  this.nbParticle += nb;
+  this.nbParticles += nb;
 };
 
 
 // Pre-build model : quad
 SolidParticleSystem.prototype.addQuads = function(nb, size) {
+  var shapeId = 1;
   var half = size / 2;
   var quadShape = [ 
     new BABYLON.Vector3(-half, -half, 0.0),
@@ -106,14 +109,15 @@ SolidParticleSystem.prototype.addQuads = function(nb, size) {
   for (var i = 0; i < nb; i++) {
     quadBuilder(this._index, quadShape, this._positions, this._indices, this._uvs);
     var idxpos = this._positions.length;
-    this.addParticle(this.nbParticle + i, this._positions.length, quadShape);
+    this.addParticle(this.nbParticles + i, this._positions.length, quadShape, shapeId);
     this._index += quadShape.length;
   }
-  this.nbParticle += nb;
+  this.nbParticles += nb;
 };
 
 
 SolidParticleSystem.prototype.addCubes = function(nb, size) {
+  var shapeId = 2;
   var half = size / 2;
   var cubeShape = [ 
     // front face
@@ -164,10 +168,10 @@ SolidParticleSystem.prototype.addCubes = function(nb, size) {
   for (var i = 0; i < nb; i++) {
     cubeBuilder(this._index, cubeShape, this._positions, this._indices, this._uvs);
     var idxpos = this._positions.length;
-    this.addParticle(this.nbParticle + i, this._positions.length, cubeShape);
+    this.addParticle(this.nbParticles + i, this._positions.length, cubeShape, shapeId);
     this._index += cubeShape.length;
   }
-  this.nbParticle += nb;
+  this.nbParticles += nb;
 };
 
 
@@ -190,7 +194,7 @@ SolidParticleSystem.prototype.resetParticle = function(particle) {
 // set all the particles
 SolidParticleSystem.prototype.setParticles = function(billboard) {
 
-  var nb = this.nbParticle;
+  var nb = this.nbParticles;
   var particles = this.particles;
   var _cam_axisX = this._axisX;
   var _cam_axisY = this._axisY;
@@ -254,9 +258,10 @@ SolidParticleSystem.prototype.setParticles = function(billboard) {
     }
 
   };
-
-this.mesh.updateMeshPositions(vertexPositionFunction, !this.mesh._areNormalsFrozen);
-//this.mesh.refreshBoundingInfo();
+  this.beforeUpdateParticles();
+  this.mesh.updateMeshPositions(vertexPositionFunction, !this.mesh._areNormalsFrozen);
+  this.afterUpdateParticles();
+  //this.mesh.refreshBoundingInfo();
 };
 
 
@@ -272,18 +277,18 @@ this.mesh.updateMeshPositions(vertexPositionFunction, !this.mesh._areNormalsFroz
 // init : set all particles first values and calls updateParticle to set them in space
 // can be overwritten by the user
 SolidParticleSystem.prototype.initParticles = function() {
-  for (var p = 0; p < this.nbParticle; p++) {
-    this.recycleParticle(this.particles[p]);
-  }
+    /*
+    for (var p = 0; p < this.nbParticles; p++) {
+      // your process here
+    }
+    */
 };
 
 
 
 // recycle a particle : can by overwritten by the user
 SolidParticleSystem.prototype.recycleParticle = function(particle) {
-  particle.position = BABYLON.Vector3.Zero();  
-  particle.velocity = (new BABYLON.Vector3(Math.random() - 0.5, Math.random(), Math.random() - 0.5)).scaleInPlace(1);
-  particle.scale = (new BABYLON.Vector3(1, 1, 1)).scaleInPlace(Math.random() * 3 + 1);
+  return particle;
 };
 
 
@@ -291,14 +296,13 @@ SolidParticleSystem.prototype.recycleParticle = function(particle) {
 // will be called on each particle by setParticles() :
 // ex : just set a particle position or velocity and recycle conditions
 SolidParticleSystem.prototype.updateParticle = function(particle) {
-  if (particle.position.y < 0) {
-    this.recycleParticle(particle);
-  }
-  particle.velocity.y -= 0.01;                            // apply gravity to y : -0.01
-  (particle.position).addInPlace(particle.velocity);      //set particle new position
-  particle.position.y += 1;
-  var sign = (particle._idx % 2 == 0) ? 1 : -1;
-  particle.rotation.z += 0.1 * sign;
-  particle.rotation.x += 0.05 * sign;
-  particle.rotation.y += 0.008 * sign;
+  return particle;
+};
+
+SolidParticleSystem.prototype.beforeUpdateParticles = function() {
+
+};
+
+SolidParticleSystem.prototype.afterUpdateParticles = function() {
+
 };

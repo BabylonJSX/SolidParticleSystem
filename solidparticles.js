@@ -6,7 +6,7 @@ var createScene = function(canvas, engine) {
   var scene = new BABYLON.Scene(engine);
   scene.clearColor = new BABYLON.Color3( .1, .2, .4);
   var camera = new BABYLON.ArcRotateCamera("camera1",  0, 0, 0, new BABYLON.Vector3(0, 0, -0), scene);
-  camera.setPosition(new BABYLON.Vector3(0, 100, -200));
+  camera.setPosition(new BABYLON.Vector3(0, 100, -500));
   camera.attachControl(canvas, true);
   var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(1, 1, 0), scene);
   light.intensity = 0.9;
@@ -40,20 +40,49 @@ var createScene = function(canvas, engine) {
   boxmat.diffuseColor = new BABYLON.Color3(1, 0.8, 0.8);
   boxmat.alpha = 0.5;
   box2.material = boxmat;
-
+  ground.freezeWorldMatrix();
+  box1.freezeWorldMatrix();
+  box2.freezeWorldMatrix();
 
   // Particle system
+  var speed = 2;
   var PS = new SolidParticleSystem('SPS', scene);
   PS.addCubes(300, 3);
   var mesh = PS.buildMesh();
   mesh.material = mat;
   mesh.freezeWorldMatrix();
-  //mesh.freezeNormals();
 
-  //mesh.position.x = 80;
 
-  //mesh.getBoundingInfo()._update(BABYLON.Matrix.Scaling(new BABYLON.Vector3(300, 300, 300)));
+  // custom SPS behavior
 
+  PS.initParticles = function() {
+    for (var p = 0; p < this.nbParticles; p++) {
+      this.recycleParticle(this.particles[p]);
+    }
+  };
+
+  PS.recycleParticle = function(particle) {
+    particle.position = BABYLON.Vector3.Zero();  
+    particle.velocity = (new BABYLON.Vector3(Math.random() - 0.5, Math.random(), Math.random() - 0.5)).scaleInPlace(speed);
+    particle.scale = (new BABYLON.Vector3(1, 1, 1)).scaleInPlace(Math.random() * 3 + 1);
+    particle.rotation = (new BABYLON.Vector3(Math.random(), Math.random(), Math.random())).scaleInPlace(0.1);
+  };
+
+  PS.updateParticle = function(particle) {
+  if (particle.position.y < 0) {
+      this.recycleParticle(particle);
+    }
+    particle.velocity.y -= 0.01;                            // apply gravity to y : -0.01
+    (particle.position).addInPlace(particle.velocity);      //set particle new position
+    particle.position.y += speed / 2;
+    var sign = (particle.idx % 2 == 0) ? 1 : -1;
+    particle.rotation.z += 0.1 * sign;
+    particle.rotation.x += 0.05 * sign;
+    particle.rotation.y += 0.008 * sign;
+  };
+
+
+  // init all particle values
   PS.initParticles();
 
   //scene.debugLayer.show();
@@ -65,7 +94,6 @@ var createScene = function(canvas, engine) {
 
   return scene;
 };
-
 
 
 
