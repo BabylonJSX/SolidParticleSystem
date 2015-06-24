@@ -23,6 +23,7 @@ var SPS = new SolidParticleSystem("SPS", scene);
 SPS.addTriangles(500, 3);    // 500 triangles sized 3
 SPS.addQuads(200, 3);        // 200 quads sized 3
 SPS.addTriangle(80, 8);      // 80 triangles sized 8
+SPS.addTetrahedrons(10, 4);  // 10 tetrahedrons sized 4
 var mesh = SPS.buildMesh();
 ```
 Now your SPS is ready to get a behavior. Once the behavior will be given (or not), you actually display the particles at their current positions with current properties with :
