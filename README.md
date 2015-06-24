@@ -35,7 +35,7 @@ _billboarded_ is a boolean (default false). If set to true, all the particles wi
 The _setParticles()_ function can be used in the BJS render loop.  
 It is mandatory to use this function to update the mesh.  
 
-
+## SPS Animation
 You can give your SPS a behavior by setting some custom functions :  
 
 * **_initParticles()_** : lets you set all the initial particle properties. You must iterate over all the particles by using the _SPS.nbParticles_ property. The usage of this function is not mandatory.

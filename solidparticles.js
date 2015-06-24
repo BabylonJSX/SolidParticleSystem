@@ -21,11 +21,11 @@ var createScene = function(canvas, engine) {
   //mat.backFaceCulling = false;
   //mat.wireframe = true;
   var texture = new BABYLON.Texture(url, scene);
-  //mat.diffuseTexture = texture;
+  mat.diffuseTexture = texture;
   //mat.diffuseTexture.hasAlpha = true;
   //mat.useSpecularOverAlpha = false;
   //mat.useAlphaFromDiffuseTexture = true;
-  mat.alpha = 0.9;
+  //mat.alpha = 0.9;
   mat.diffuseColor = BABYLON.Color3.Red();
 
   // ground and boxes
@@ -48,11 +48,12 @@ var createScene = function(canvas, engine) {
   var speed = 2;
   var gravity = -0.01;
   var PS = new SolidParticleSystem('SPS', scene);
-  PS.addTriangles(200, 3);
-  PS.addQuads(200, 3);
-  PS.addCubes(500, 2);
+  //PS.addTriangles(200, 3);
+  //PS.addQuads(200, 3);
+  //PS.addCubes(500, 2);
+  //PS.addTetrahedrons(1, 10);
   var mesh = PS.buildMesh();
-  //mesh.material = mat;
+  mesh.material = mat;
   mesh.freezeWorldMatrix();
 
 

@@ -185,6 +185,45 @@ SolidParticleSystem.prototype.addCubes = function(nb, size) {
   this.nbParticles += nb;
 };
 
+SolidParticleSystem.prototype.addTetrahedrons = function(nb, size) {
+  var shapeId = 3;
+  var half = size / 2;
+  var h = size * Math.sqrt(3) / 4;
+  var high = size * Math.sqrt(6) / 3;
+  var pt0 = new BABYLON.Vector3(-half, -h, -high / 4);
+  var pt1 = new BABYLON.Vector3(half, -h, -high / 4);
+  var pt2 = new BABYLON.Vector3(0, h, -high / 4);
+  var pt3 = new BABYLON.Vector3(0, 0, high * 3 / 4);
+  var tetraShape = [ 
+    pt0, pt1, pt2,    // front face
+    pt0, pt3, pt1,    // bottom face
+    pt3, pt0, pt2,    // left face
+    pt1, pt3, pt2     // right face
+  ];
+
+  var tetraBuilder = function(p, shape, positions, indices, uvs, colors) { 
+    var i;
+    for (i = 0; i < 12; i++) {
+      positions.push(shape[i].x, shape[i].y, shape[i].z);
+      colors.push(1,1,1,1);
+    }
+    var j;
+    for (i = 0; i < 4; i++) {
+      j = i * 3;
+      indices.push(p + j, p + j + 1, p + j + 2);
+      uvs.push(0,1, 1,1, 0.5,0);
+    }
+  };
+  for (var i = 0; i < nb; i++) {
+    tetraBuilder(this._index, tetraShape, this._positions, this._indices, this._uvs, this._colors);
+      console.log(this._positions.length / 3, this._indices.length / 3);
+
+    var idxpos = this._positions.length;
+    this.addParticle(this.nbParticles + i, this._positions.length, tetraShape, shapeId);
+    this._index += tetraShape.length;
+  }
+  this.nbParticles += nb;
+};
 
 // reset a particle to its just built status
 SolidParticleSystem.prototype.resetParticle = function(particle) {
