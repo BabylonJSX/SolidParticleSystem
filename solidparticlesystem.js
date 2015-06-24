@@ -234,16 +234,21 @@ SolidParticleSystem.prototype.setParticles = function(billboard) {
   var _rotMatrix = this._rotMatrix;
   var _rotated = this._rotated;
   var mesh = this.mesh;
+  
+  // colors
+  var colors = mesh.getVerticesData(BABYLON.VertexBuffer.ColorKind);
+  
   var vertexPositionFunction = function(positions) {
-    var idx, pt, sizeX, sizeY, sizeZ, nbPT; //  nbPT nb vertex per particle : 3 for triangle, 4 for quad, etc         
+    var idx, colidx, pt, sizeX, sizeY, sizeZ; 
+    var nbPT;                               //  nbPT nb vertex per particle : 3 for triangle, 4 for quad, etc         
     var posPart;                            // nb positions per particle = 3 * nbPT
     var particle;
     
-    // colors
-    var colors = mesh.getVerticesData(BABYLON.VertexBuffer.ColorKind);
+
 
     // particle loop
     var index = 0;
+    var colorIndex = 0;
     for (var p = 0; p < nb; p++) { 
       particle = particles[p];
 
@@ -258,6 +263,7 @@ SolidParticleSystem.prototype.setParticles = function(billboard) {
       system.updateParticle(particle);   // call to custom user function to update the particle position
       for (pt = 0; pt < nbPT; pt++) {
         idx = index + pt * 3;
+        colidx = colorIndex + pt * 4;
 
         BABYLON.Vector3.TransformCoordinatesToRef(particle._shape[pt], _rotMatrix, _rotated);
 
@@ -268,16 +274,18 @@ SolidParticleSystem.prototype.setParticles = function(billboard) {
         positions[idx]     = particle.position.x + _cam_axisX.x * sizeX + _cam_axisY.x * sizeY + _cam_axisZ.x * sizeZ;      
         positions[idx + 1] = particle.position.y + _cam_axisX.y * sizeX + _cam_axisY.y * sizeY + _cam_axisZ.y * sizeZ; 
         positions[idx + 2] = particle.position.z + _cam_axisX.z * sizeX + _cam_axisY.z * sizeY + _cam_axisZ.z * sizeZ; 
+
+        colors[colidx] = particle.color.x;
+        colors[colidx + 1] = particle.color.y;
+        colors[colidx + 2] = particle.color.z;
+        colors[colidx + 3] = particle.color.w;
       }
       index = idx + 3;
-      colors[p * 4] = particle.color.x;
-      colors[p * 4 + 1] = particle.color.y;
-      colors[p * 4 + 2] = particle.color.z;
-      colors[p * 4 + 3] = particle.color.w;
+      colorIndex = colidx + 4;
     }
-    mesh.updateVerticesData(BABYLON.VertexBuffer.ColorKind, false, false);
   };
   this.beforeUpdateParticles();
+  this.mesh.updateVerticesData(BABYLON.VertexBuffer.ColorKind, colors, false, false);
   this.mesh.updateMeshPositions(vertexPositionFunction, !this.mesh._areNormalsFrozen);
   this.afterUpdateParticles();
   //this.mesh.refreshBoundingInfo();

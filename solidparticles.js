@@ -45,10 +45,12 @@ var createScene = function(canvas, engine) {
   box2.freezeWorldMatrix();
 
   // Particle system
-  var speed = 1;
+  var speed = 2;
   var gravity = -0.01;
   var PS = new SolidParticleSystem('SPS', scene);
-  PS.addCubes(5, 2);
+  PS.addTriangles(200, 3);
+  PS.addQuads(200, 3);
+  PS.addCubes(500, 2);
   var mesh = PS.buildMesh();
   //mesh.material = mat;
   mesh.freezeWorldMatrix();
@@ -69,7 +71,7 @@ var createScene = function(canvas, engine) {
     particle.velocity = (new BABYLON.Vector3(Math.random() - 0.5, Math.random(), Math.random() - 0.5)).scaleInPlace(speed);
     particle.scale = (new BABYLON.Vector3(1, 1, 1)).scaleInPlace(Math.random() * 3 + 1);
     particle.rotation = (new BABYLON.Vector3(Math.random(), Math.random(), Math.random())).scaleInPlace(0.1);
-    particle.color = new BABYLON.Vector4(Math.random(), Math.random(), Math.random(), Math.random());
+    particle.color = (new BABYLON.Vector4(Math.random() + 1.2, Math.random() + 1.2, Math.random() + 1.2, Math.random() + 1.2)).scaleInPlace(0.5);
   };
 
   PS.updateParticle = function(particle) {
