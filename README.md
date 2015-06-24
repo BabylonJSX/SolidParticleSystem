@@ -13,9 +13,10 @@ Just add a script tag in your HTML page
 ```
 
 ## Usage
-First you create an empty SPS and you add particles to it with _addXXX(nb, size)_ as many times you need.   
-Its name will be its underlying mesh name.   
-Then you build the mesh
+First you create an empty SPS and you add particles to it with the _addXXX(nb, size)_ methods as many times you need.   
+The SPS name will be its underlying mesh name.   
+
+Then you build the mesh.
 
 ```javascript
 var SPS = new SolidParticleSystem("SPS", scene);
@@ -24,35 +25,41 @@ SPS.addQuads(200, 3);        // 200 quads sized 3
 SPS.addTriangle(80, 8);      // 80 triangles sized 8
 var mesh = SPS.buildMesh();
 ```
-Now your SPS is ready to get a behavior. Once the behavior will be given, you actually display the particles at their current positions with current properties with :
+Now your SPS is ready to get a behavior. Once the behavior will be given (or not), you actually display the particles at their current positions with current properties with :
 ```javascript
-SPS.setParticles();
+SPS.setParticles(billboarded);
 ```
-This function can be used in the BJS render loop.  
+_billboarded_ is a boolean (default false). If set to true, all the particles will face the cam and their _x_ and _y_ rotation values will be ignored. This is useful if you display only plane particles.
 
 
-You can give it a behavior by setting some custom functions :  
+The _setParticles()_ function can be used in the BJS render loop.  
+It is mandatory to use this function to update the mesh.  
 
-* **initParticles()** : lets you set all the initial particle properties. You must iterate over all the particles by using _SPS.nbParticles_ property. The usage of this function is not mandatory.
-* **recycleParticle(particle)** : lets you set a particle to be recycled. It is called per particle. The usage of this function is not mandatory. 
-* **updateParticle(particle)** : lets you set the particle properties. This function is called per particle by _SPS.setParticles()_. The usage of this function is not mandatory.  
-* **beforeUpdateParticles()** : lets you make things within the call to _SPS.setParticles()_ just before iterating over all the particles.  The usage of this function is not mandatory.   
-* **afterUpdateParticles()** : lets you make things within the call to _SPS.setParticles()_  just after the iteration over all the particles is done. The usage of this function is not mandatory.   
+
+You can give your SPS a behavior by setting some custom functions :  
+
+* **_initParticles()_** : lets you set all the initial particle properties. You must iterate over all the particles by using the _SPS.nbParticles_ property. The usage of this function is not mandatory.
+* **_recycleParticle(particle)_** : lets you set a particle to be recycled. It is called per particle. The usage of this function is not mandatory. 
+* **_updateParticle(particle)_** : lets you set the particle properties. This function is called per particle by _SPS.setParticles()_. The usage of this function is not mandatory.  
+* **_beforeUpdateParticles()_** : lets you make things within the call to _SPS.setParticles()_ just before iterating over all the particles.  The usage of this function is not mandatory.   
+* **_afterUpdateParticles()_** : lets you make things within the call to _SPS.setParticles()_  just after the iteration over all the particles is done. The usage of this function is not mandatory.   
 
 The particle properties that can be set are :
 
-* position : Vector3  default = (0, 0, 0)
-* rotation : Vector3  default = (0, 0, 0)  
-* velocity : Vector3  default = (0, 0, 0)
-* color : Vector4  default = (1, 1, 1, 1)
-* scale : Vector3  default = (1, 1, 1)
-* alive : boolean  default = true
+* **_position_** : Vector3  default = (0, 0, 0)
+* **_rotation_** : Vector3  default = (0, 0, 0)  
+* **_velocity_** : Vector3  default = (0, 0, 0)
+* **_color_** : Vector4  default = (1, 1, 1, 1)
+* **_scale_** : Vector3  default = (1, 1, 1)
+* **_alive_** : boolean  default = true
+
+Please note that all positions are expressed in the mesh **local space** and not in the World space.  
 
 You can obviously also create your own properties like _acceleration: Vector3_, in _initParticles()_ for instance.  
 You may access to some read-only properties :   
 
-* idx : particle index
-* shapeId : shape model ID (0 = triangle, 1 = quad, 2 = cube, etc)
+* **_idx_** : particle index
+* **_shapeId_** : shape model ID (0 = triangle, 1 = quad, 2 = cube, etc)
 
 example :
 
