@@ -45,37 +45,41 @@ var createScene = function(canvas, engine) {
   box2.freezeWorldMatrix();
 
   // Particle system
-  var speed = 2;
+  var speed = 1;
+  var gravity = -0.01;
   var PS = new SolidParticleSystem('SPS', scene);
-  PS.addCubes(300, 3);
+  PS.addCubes(5, 2);
   var mesh = PS.buildMesh();
-  mesh.material = mat;
+  //mesh.material = mat;
   mesh.freezeWorldMatrix();
 
 
-  // custom SPS behavior
+  // define a custom SPS behavior
 
   PS.initParticles = function() {
+    // just recycle everything
     for (var p = 0; p < this.nbParticles; p++) {
       this.recycleParticle(this.particles[p]);
     }
   };
 
   PS.recycleParticle = function(particle) {
+    // set particle new velocity, scale and rotation
     particle.position = BABYLON.Vector3.Zero();  
     particle.velocity = (new BABYLON.Vector3(Math.random() - 0.5, Math.random(), Math.random() - 0.5)).scaleInPlace(speed);
     particle.scale = (new BABYLON.Vector3(1, 1, 1)).scaleInPlace(Math.random() * 3 + 1);
     particle.rotation = (new BABYLON.Vector3(Math.random(), Math.random(), Math.random())).scaleInPlace(0.1);
+    particle.color = new BABYLON.Vector4(Math.random(), Math.random(), Math.random(), Math.random());
   };
 
   PS.updateParticle = function(particle) {
   if (particle.position.y < 0) {
       this.recycleParticle(particle);
     }
-    particle.velocity.y -= 0.01;                            // apply gravity to y : -0.01
-    (particle.position).addInPlace(particle.velocity);      //set particle new position
+    particle.velocity.y += gravity;                         // apply gravity to y
+    (particle.position).addInPlace(particle.velocity);      // update particle new position
     particle.position.y += speed / 2;
-    var sign = (particle.idx % 2 == 0) ? 1 : -1;
+    var sign = (particle.idx % 2 == 0) ? 1 : -1;            // rotation sign and new value
     particle.rotation.z += 0.1 * sign;
     particle.rotation.x += 0.05 * sign;
     particle.rotation.y += 0.008 * sign;
