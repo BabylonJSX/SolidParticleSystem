@@ -19,7 +19,7 @@ var createScene = function(canvas, engine) {
   var url = "http://jerome.bousquie.fr/BJS/images/sc-snowflakes1.png";
   var mat = new BABYLON.StandardMaterial("mat1", scene);
   //mat.backFaceCulling = false;
-  //mat.wireframe = true;
+  mat.wireframe = true;
   var texture = new BABYLON.Texture(url, scene);
   //mat.diffuseTexture = texture;
   //mat.diffuseTexture.hasAlpha = true;
@@ -51,9 +51,10 @@ var createScene = function(canvas, engine) {
   //PS.addTriangles(200, 3);
   //PS.addQuads(200, 3);
   //PS.addCubes(500, 2);
-  PS.addTetrahedrons(1000, 6);
+  //PS.addTetrahedrons(1000, 6);
+  PS.addPolygons(1, 10, 3);
   var mesh = PS.buildMesh();
-  //mesh.material = mat;
+  mesh.material = mat;
   mesh.freezeWorldMatrix();
   //mesh.freezeNormals();
 
@@ -107,7 +108,7 @@ var createScene = function(canvas, engine) {
   //scene.debugLayer.show();
   // animation
   scene.registerBeforeRender(function() {
-    PS.setParticles(false);
+    //PS.setParticles(false);
     pl.position = camera.position;
   });
 

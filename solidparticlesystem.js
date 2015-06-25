@@ -223,6 +223,43 @@ SolidParticleSystem.prototype.addTetrahedrons = function(nb, size) {
   this.nbParticles += nb;
 };
 
+SolidParticleSystem.prototype.addPolygons = function(nb, size, vertexNb) {
+  var shapeId = 4;
+  var half = size / 2;
+  var pi2 = Math.PI * 2;
+  var polygonShape = [];
+  polygonShape.push(BABYLON.Vector3.Zero()); // central point
+  var ang = 0;
+  for (var i = 0; i < vertexNb; i++) {
+    ang = i * pi2 / vertexNb;
+    polygonShape.push(new BABYLON.Vector3(half * Math.cos(ang), half * Math.sin(ang), 0));
+  }
+  polygonShape.push(polygonShape[1]); // close the polygon
+  var polygonBuilder = function(p, shape, positions, indices, uvs, colors) { 
+    var i;
+    for (i = 0; i <= vertexNb; i++) {
+      positions.push(shape[i].x, shape[i].y, shape[i].z);
+      colors.push(1,1,1,1);
+      var u = ((shape[i].x / size) + 1) / 2;
+      var v = (1 - (shape[i].y / size)) / 2;
+      uvs.push(u, v);
+    }
+    for (i = 1; i < vertexNb; i++) {
+      indices.push(i + 1, 0, i);
+    }
+  };
+  
+  for (var i = 0; i < nb; i++) {
+    polygonBuilder(this._index, polygonShape, this._positions, this._indices, this._uvs, this._colors);
+    var idxpos = this._positions.length;
+    this.addParticle(this.nbParticles + i, this._positions.length, polygonShape, shapeId);
+    this._index += polygonShape.length;
+  }
+  this.nbParticles += nb;
+};
+
+
+
 // reset a particle to its just built status
 SolidParticleSystem.prototype.resetParticle = function(particle) {
   var idx, pt;
