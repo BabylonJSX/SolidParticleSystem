@@ -21,7 +21,7 @@ var createScene = function(canvas, engine) {
   //mat.backFaceCulling = false;
   //mat.wireframe = true;
   var texture = new BABYLON.Texture(url, scene);
-  mat.diffuseTexture = texture;
+  //mat.diffuseTexture = texture;
   //mat.diffuseTexture.hasAlpha = true;
   //mat.useSpecularOverAlpha = false;
   //mat.useAlphaFromDiffuseTexture = true;
@@ -45,16 +45,17 @@ var createScene = function(canvas, engine) {
   box2.freezeWorldMatrix();
 
   // Particle system
-  var speed = 2;
+  var speed = 4;
   var gravity = -0.01;
   var PS = new SolidParticleSystem('SPS', scene);
   //PS.addTriangles(200, 3);
   //PS.addQuads(200, 3);
   //PS.addCubes(500, 2);
-  //PS.addTetrahedrons(1, 10);
+  PS.addTetrahedrons(1000, 6);
   var mesh = PS.buildMesh();
-  mesh.material = mat;
+  //mesh.material = mat;
   mesh.freezeWorldMatrix();
+  //mesh.freezeNormals();
 
 
   // define a custom SPS behavior
@@ -68,11 +69,22 @@ var createScene = function(canvas, engine) {
 
   PS.recycleParticle = function(particle) {
     // set particle new velocity, scale and rotation
-    particle.position = BABYLON.Vector3.Zero();  
-    particle.velocity = (new BABYLON.Vector3(Math.random() - 0.5, Math.random(), Math.random() - 0.5)).scaleInPlace(speed);
-    particle.scale = (new BABYLON.Vector3(1, 1, 1)).scaleInPlace(Math.random() * 3 + 1);
-    particle.rotation = (new BABYLON.Vector3(Math.random(), Math.random(), Math.random())).scaleInPlace(0.1);
-    particle.color = (new BABYLON.Vector4(Math.random() + 1.2, Math.random() + 1.2, Math.random() + 1.2, Math.random() + 1.2)).scaleInPlace(0.5);
+    particle.position.x = 0;
+    particle.position.y = 0;
+    particle.position.z = 0;
+    particle.velocity.x = (Math.random() - 0.5) * speed;
+    particle.velocity.y = Math.random() * speed;
+    particle.velocity.z = (Math.random() - 0.5) * speed;
+    particle.scale.x = Math.random() + 0.5;
+    particle.scale.y = Math.random() + 0.5;
+    particle.scale.z = Math.random() + 0.5;
+    particle.rotation.x = Math.random() * 0.1;
+    particle.rotation.y = Math.random() * 0.1;
+    particle.rotation.z = Math.random() * 0.1;
+    particle.color.x = Math.random() * 0.6 + 0.5;
+    particle.color.y = Math.random() * 0.6 + 0.5;
+    particle.color.z = Math.random() * 0.6 + 0.5;
+    particle.color.w = Math.random() * 0.6 + 0.5;
   };
 
   PS.updateParticle = function(particle) {

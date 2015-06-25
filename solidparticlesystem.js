@@ -216,8 +216,6 @@ SolidParticleSystem.prototype.addTetrahedrons = function(nb, size) {
   };
   for (var i = 0; i < nb; i++) {
     tetraBuilder(this._index, tetraShape, this._positions, this._indices, this._uvs, this._colors);
-      console.log(this._positions.length / 3, this._indices.length / 3);
-
     var idxpos = this._positions.length;
     this.addParticle(this.nbParticles + i, this._positions.length, tetraShape, shapeId);
     this._index += tetraShape.length;

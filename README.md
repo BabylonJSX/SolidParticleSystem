@@ -56,11 +56,20 @@ The particle properties that can be set are :
 
 Please note that all positions are expressed in the mesh **local space** and not in the World space.  
 
-You can obviously also create your own properties like _acceleration: Vector3_, in _initParticles()_ for instance.  
+You can obviously also create your own properties like _acceleration: Vector3_ or _age_, in _initParticles()_ for instance.  
 You may access to some read-only properties :   
 
 * **_idx_** : particle index
 * **_shapeId_** : shape model ID (0 = triangle, 1 = quad, 2 = cube, etc)
+
+You have also access to some SPS properties :
+
+* **SPS.particles** : this is the array containing all the particles. You should iterate over this array in _initParticles()_ function for instance.
+* **SPS.nbParticles** : this is number of particles in the SPS.
+* **SPS.counter** : this is a counter for your own usage. It's not set by any SPS default functions.
+
+Here again, you can add your own properties like _capacity_ or _rate_ if needed.
+
 
 example :
 
