@@ -45,8 +45,9 @@ var createScene = function(canvas, engine) {
   box2.freezeWorldMatrix();
 
 
-  var sphere = BABYLON.Mesh.CreateSphere('model1', 8, 4, scene);
+  var sphere = BABYLON.Mesh.CreateSphere("sphere", 4, 4, scene);
   var knot = BABYLON.Mesh.CreateTorusKnot("knot", 2, 0.5, 32, 8, 2, 3, scene);
+  var cyl = BABYLON.Mesh.CreateCylinder("cyl", 3, 2, 4, 6, 1,scene);
 
   // Particle system
   var speed = 1;
@@ -59,11 +60,13 @@ var createScene = function(canvas, engine) {
   //PS.addPolygons(200, 8, 16);
   //PS.addPolygons(200, 10, 5);
   //PS.addPolygons(200, 8, 6);
-  PS.addShape(sphere, 100);
-  PS.addShape(knot, 100);
+  PS.addShape(sphere, 200);
+  //PS.addShape(knot, 50);
+  //PS.addShape(cyl, 50);
   var mesh = PS.buildMesh();
   sphere.dispose();
   knot.dispose();
+  cyl.dispose();
   //mesh.material = mat;
   mesh.freezeWorldMatrix();
   mesh.freezeNormals();

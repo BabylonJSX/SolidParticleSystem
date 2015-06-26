@@ -16,6 +16,8 @@ Just add a script tag in your HTML page
 First you create an empty SPS and you add particles to it with the _addXXX(nb, size)_ methods as many times you need.   
 The SPS name will be its underlying mesh name.   
 
+You can also create particles from an existing mesh with _addShape(mesh)_.
+
 Then you build the mesh.
 
 ```javascript
@@ -28,6 +30,10 @@ SPS.addTriangles(80, 8);      // 80 triangles sized 8
 // solid shapes
 SPS.addTetrahedrons(10, 4);  // 10 tetrahedrons sized 4
 SPS.addCubes(20, 3);         // 20 cubes sized 3
+
+var sphere = BABYLON.Mesh.CreateSphere("s", 5, 3, scene);
+SPS.addShape(sphere, 20, 12);  // 20 spheres with the shapeID set to 12 (optional parameter)
+sphere.dispose();
 
 var mesh = SPS.buildMesh();
 ```
