@@ -52,13 +52,13 @@ var createScene = function(canvas, engine) {
   //PS.addQuads(200, 3);
   //PS.addCubes(500, 2);
   //PS.addTetrahedrons(1000, 6);
-  PS.addPolygons(100, 8, 16);
-  PS.addPolygons(100, 10, 5);
-  PS.addPolygons(100, 8, 6);
+  PS.addPolygons(200, 8, 16);
+  PS.addPolygons(200, 10, 5);
+  PS.addPolygons(200, 8, 6);
   var mesh = PS.buildMesh();
   //mesh.material = mat;
   mesh.freezeWorldMatrix();
-  //mesh.freezeNormals();
+  mesh.freezeNormals();
 
 
   // define a custom SPS behavior

@@ -24,16 +24,18 @@ var SPS = new SolidParticleSystem("SPS", scene);
 SPS.addTriangles(500, 3);    // 500 triangles sized 3
 SPS.addQuads(200, 3);        // 200 quads sized 3
 SPS.addPolygons(100, 5, 8);  // 100 polygons sized 5 with 8 vertices each
-SPS.addTriangle(80, 8);      // 80 triangles sized 8
+SPS.addTriangles(80, 8);      // 80 triangles sized 8
 // solid shapes
 SPS.addTetrahedrons(10, 4);  // 10 tetrahedrons sized 4
+SPS.addCubes(20, 3);         // 20 cubes sized 3
+
 var mesh = SPS.buildMesh();
 ```
 Now your SPS is ready to get a behavior. Once the behavior will be given (or not), you actually display the particles at their current positions with current properties with :
 ```javascript
 SPS.setParticles(billboarded);
 ```
-_billboarded_ is a boolean (default false). If set to true, all the particles will face the cam and their _x_ and _y_ rotation values will be ignored. This is useful if you display only plane particles.
+_billboarded_ is a boolean (default _false_). If set to _true_, all the particles will face the cam and their _x_ and _y_ rotation values will be ignored. This is useful if you display only plane particles.
 
 
 The _setParticles()_ function can be used in the BJS render loop.  
