@@ -19,7 +19,7 @@ var createScene = function(canvas, engine) {
   var url = "http://jerome.bousquie.fr/BJS/images/sc-snowflakes1.png";
   var mat = new BABYLON.StandardMaterial("mat1", scene);
   //mat.backFaceCulling = false;
-  mat.wireframe = true;
+  //mat.wireframe = true;
   var texture = new BABYLON.Texture(url, scene);
   //mat.diffuseTexture = texture;
   //mat.diffuseTexture.hasAlpha = true;
@@ -45,16 +45,18 @@ var createScene = function(canvas, engine) {
   box2.freezeWorldMatrix();
 
   // Particle system
-  var speed = 4;
+  var speed = 3;
   var gravity = -0.01;
   var PS = new SolidParticleSystem('SPS', scene);
   //PS.addTriangles(200, 3);
   //PS.addQuads(200, 3);
   //PS.addCubes(500, 2);
   //PS.addTetrahedrons(1000, 6);
-  PS.addPolygons(1, 10, 3);
+  PS.addPolygons(100, 8, 16);
+  PS.addPolygons(100, 10, 5);
+  PS.addPolygons(100, 8, 6);
   var mesh = PS.buildMesh();
-  mesh.material = mat;
+  //mesh.material = mat;
   mesh.freezeWorldMatrix();
   //mesh.freezeNormals();
 
@@ -76,11 +78,13 @@ var createScene = function(canvas, engine) {
     particle.velocity.x = (Math.random() - 0.5) * speed;
     particle.velocity.y = Math.random() * speed;
     particle.velocity.z = (Math.random() - 0.5) * speed;
+    /*
     particle.scale.x = Math.random() + 0.5;
     particle.scale.y = Math.random() + 0.5;
     particle.scale.z = Math.random() + 0.5;
-    particle.rotation.x = Math.random() * 0.1;
-    particle.rotation.y = Math.random() * 0.1;
+    */
+    //particle.rotation.x = Math.random() * 0.1;
+    //particle.rotation.y = Math.random() * 0.1;
     particle.rotation.z = Math.random() * 0.1;
     particle.color.x = Math.random() * 0.6 + 0.5;
     particle.color.y = Math.random() * 0.6 + 0.5;
@@ -97,8 +101,8 @@ var createScene = function(canvas, engine) {
     particle.position.y += speed / 2;
     var sign = (particle.idx % 2 == 0) ? 1 : -1;            // rotation sign and new value
     particle.rotation.z += 0.1 * sign;
-    particle.rotation.x += 0.05 * sign;
-    particle.rotation.y += 0.008 * sign;
+    //particle.rotation.x += 0.05 * sign;
+    //particle.rotation.y += 0.008 * sign;
   };
 
 
@@ -108,7 +112,7 @@ var createScene = function(canvas, engine) {
   //scene.debugLayer.show();
   // animation
   scene.registerBeforeRender(function() {
-    //PS.setParticles(false);
+    PS.setParticles(true);
     pl.position = camera.position;
   });
 

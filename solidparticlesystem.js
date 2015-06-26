@@ -85,7 +85,6 @@ SolidParticleSystem.prototype.addTriangles = function(nb, size) {
   };
   for (var i = 0; i < nb; i++) {
     triangleBuilder(this._index, triangleShape, this._positions, this._indices, this._uvs, this._colors);
-    var idxpos = this._positions.length;
     this.addParticle(this.nbParticles + i, this._positions.length, triangleShape, shapeId);
     this._index += triangleShape.length;
   }
@@ -118,7 +117,6 @@ SolidParticleSystem.prototype.addQuads = function(nb, size) {
   };
   for (var i = 0; i < nb; i++) {
     quadBuilder(this._index, quadShape, this._positions, this._indices, this._uvs, this._colors);
-    var idxpos = this._positions.length;
     this.addParticle(this.nbParticles + i, this._positions.length, quadShape, shapeId);
     this._index += quadShape.length;
   }
@@ -178,7 +176,6 @@ SolidParticleSystem.prototype.addCubes = function(nb, size) {
   };
   for (var i = 0; i < nb; i++) {
     cubeBuilder(this._index, cubeShape, this._positions, this._indices, this._uvs, this._colors);
-    var idxpos = this._positions.length;
     this.addParticle(this.nbParticles + i, this._positions.length, cubeShape, shapeId);
     this._index += cubeShape.length;
   }
@@ -216,7 +213,6 @@ SolidParticleSystem.prototype.addTetrahedrons = function(nb, size) {
   };
   for (var i = 0; i < nb; i++) {
     tetraBuilder(this._index, tetraShape, this._positions, this._indices, this._uvs, this._colors);
-    var idxpos = this._positions.length;
     this.addParticle(this.nbParticles + i, this._positions.length, tetraShape, shapeId);
     this._index += tetraShape.length;
   }
@@ -224,6 +220,7 @@ SolidParticleSystem.prototype.addTetrahedrons = function(nb, size) {
 };
 
 SolidParticleSystem.prototype.addPolygons = function(nb, size, vertexNb) {
+  vertexNb = vertexNb || 12;
   var shapeId = 4;
   var half = size / 2;
   var pi2 = Math.PI * 2;
@@ -237,21 +234,19 @@ SolidParticleSystem.prototype.addPolygons = function(nb, size, vertexNb) {
   polygonShape.push(polygonShape[1]); // close the polygon
   var polygonBuilder = function(p, shape, positions, indices, uvs, colors) { 
     var i;
-    for (i = 0; i <= vertexNb; i++) {
+    for (i = 0; i < polygonShape.length; i++) {
       positions.push(shape[i].x, shape[i].y, shape[i].z);
       colors.push(1,1,1,1);
-      var u = ((shape[i].x / size) + 1) / 2;
-      var v = (1 - (shape[i].y / size)) / 2;
+      var u = ((shape[i].x / half) + 1) / 2;
+      var v = (1 - (shape[i].y / half)) / 2;
       uvs.push(u, v);
     }
-    for (i = 1; i < vertexNb; i++) {
-      indices.push(i + 1, 0, i);
+    for (i = 1; i <= vertexNb; i++) {
+      indices.push(p + i + 1, p, p + i);
     }
   };
-  
-  for (var i = 0; i < nb; i++) {
+  for (i = 0; i < nb; i++) {
     polygonBuilder(this._index, polygonShape, this._positions, this._indices, this._uvs, this._colors);
-    var idxpos = this._positions.length;
     this.addParticle(this.nbParticles + i, this._positions.length, polygonShape, shapeId);
     this._index += polygonShape.length;
   }

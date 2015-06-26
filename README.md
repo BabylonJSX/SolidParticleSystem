@@ -20,9 +20,12 @@ Then you build the mesh.
 
 ```javascript
 var SPS = new SolidParticleSystem("SPS", scene);
+// plane shapes
 SPS.addTriangles(500, 3);    // 500 triangles sized 3
 SPS.addQuads(200, 3);        // 200 quads sized 3
+SPS.addPolygons(100, 5, 8);  // 100 polygons sized 5 with 8 vertices each
 SPS.addTriangle(80, 8);      // 80 triangles sized 8
+// solid shapes
 SPS.addTetrahedrons(10, 4);  // 10 tetrahedrons sized 4
 var mesh = SPS.buildMesh();
 ```
