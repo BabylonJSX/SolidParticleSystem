@@ -6,7 +6,7 @@ var createScene = function(canvas, engine) {
   var scene = new BABYLON.Scene(engine);
   scene.clearColor = new BABYLON.Color3( .1, .2, .4);
   var camera = new BABYLON.ArcRotateCamera("camera1",  0, 0, 0, new BABYLON.Vector3(0, 0, -0), scene);
-  camera.setPosition(new BABYLON.Vector3(0, 100, -500));
+  camera.setPosition(new BABYLON.Vector3(0, 50, -300));
   camera.attachControl(canvas, true);
   var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(1, 1, 0), scene);
   light.intensity = 0.9;
@@ -44,18 +44,26 @@ var createScene = function(canvas, engine) {
   box1.freezeWorldMatrix();
   box2.freezeWorldMatrix();
 
+
+  var sphere = BABYLON.Mesh.CreateSphere('model1', 8, 4, scene);
+  var knot = BABYLON.Mesh.CreateTorusKnot("knot", 2, 0.5, 32, 8, 2, 3, scene);
+
   // Particle system
-  var speed = 3;
+  var speed = 1;
   var gravity = -0.01;
   var PS = new SolidParticleSystem('SPS', scene);
   //PS.addTriangles(200, 3);
   //PS.addQuads(200, 3);
   //PS.addCubes(500, 2);
   //PS.addTetrahedrons(1000, 6);
-  PS.addPolygons(200, 8, 16);
-  PS.addPolygons(200, 10, 5);
-  PS.addPolygons(200, 8, 6);
+  //PS.addPolygons(200, 8, 16);
+  //PS.addPolygons(200, 10, 5);
+  //PS.addPolygons(200, 8, 6);
+  PS.addShape(sphere, 100);
+  PS.addShape(knot, 100);
   var mesh = PS.buildMesh();
+  sphere.dispose();
+  knot.dispose();
   //mesh.material = mat;
   mesh.freezeWorldMatrix();
   mesh.freezeNormals();
@@ -78,13 +86,12 @@ var createScene = function(canvas, engine) {
     particle.velocity.x = (Math.random() - 0.5) * speed;
     particle.velocity.y = Math.random() * speed;
     particle.velocity.z = (Math.random() - 0.5) * speed;
-    /*
-    particle.scale.x = Math.random() + 0.5;
-    particle.scale.y = Math.random() + 0.5;
-    particle.scale.z = Math.random() + 0.5;
-    */
-    //particle.rotation.x = Math.random() * 0.1;
-    //particle.rotation.y = Math.random() * 0.1;
+    var scale = Math.random() + 0.5;
+    particle.scale.x = scale;
+    particle.scale.y = scale;
+    particle.scale.z = scale;
+    particle.rotation.x = Math.random() * 0.1;
+    particle.rotation.y = Math.random() * 0.1;
     particle.rotation.z = Math.random() * 0.1;
     particle.color.x = Math.random() * 0.6 + 0.5;
     particle.color.y = Math.random() * 0.6 + 0.5;
@@ -101,8 +108,8 @@ var createScene = function(canvas, engine) {
     particle.position.y += speed / 2;
     var sign = (particle.idx % 2 == 0) ? 1 : -1;            // rotation sign and new value
     particle.rotation.z += 0.1 * sign;
-    //particle.rotation.x += 0.05 * sign;
-    //particle.rotation.y += 0.008 * sign;
+    particle.rotation.x += 0.05 * sign;
+    particle.rotation.y += 0.008 * sign;
   };
 
 
@@ -112,7 +119,7 @@ var createScene = function(canvas, engine) {
   //scene.debugLayer.show();
   // animation
   scene.registerBeforeRender(function() {
-    PS.setParticles(true);
+    PS.setParticles(false);
     pl.position = camera.position;
   });
 
