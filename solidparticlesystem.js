@@ -40,7 +40,7 @@ SolidParticleSystem.prototype.buildMesh  = function() {
   vertexData.uvs = this._uvs;
   vertexData.colors = this._colors;
   var mesh = new BABYLON.Mesh(name, this._scene);
-  mesh.hasVertexAlpha = true;
+  //mesh.hasVertexAlpha = true;
   vertexData.applyToMesh(mesh, true);
   this.mesh = mesh;
   return mesh;
@@ -312,14 +312,10 @@ SolidParticleSystem.prototype.addShape = function(mesh, nb, shapeId) {
 
 // reset a particle to its just built status
 SolidParticleSystem.prototype.resetParticle = function(particle) {
-  var idx, pt;
-  var nbPT = particle._shape.length;           
-  var index = particle._pos;
-  for (pt = 0; pt < nbPT; pt++) {
-    idx = index + pt * 3;
-    this._positions[idx] = particle._shape[pt].x;      
-    this._positions[idx + 1] = particle._shape[pt].y;
-    this._positions[idx + 2] = particle._shape[pt].z;
+  for (var pt = 0; pt < particle._shape.length; pt++) {
+    this._positions[particle._pos + pt * 3] = particle._shape[pt].x;      
+    this._positions[particle._pos + pt * 3 + 1] = particle._shape[pt].y;
+    this._positions[particle._pos + pt * 3 + 2] = particle._shape[pt].z;
   }
 };
 
@@ -329,11 +325,9 @@ SolidParticleSystem.prototype.resetParticle = function(particle) {
 // set all the particles
 SolidParticleSystem.prototype.setParticles = function(billboard) {
 
-  var nb = this.nbParticles;
-  var particles = this.particles;
-  var _cam_axisX = this._axisX;
-  var _cam_axisY = this._axisY;
-  var _cam_axisZ = this._axisZ;
+  this._cam_axisX = this._axisX;
+  this._cam_axisY = this._axisY;
+  this._cam_axisZ = this._axisZ;
 
   if (billboard) {    // the particles will always face the camera
     
@@ -348,71 +342,57 @@ SolidParticleSystem.prototype.setParticles = function(billboard) {
     BABYLON.Vector3.CrossToRef(this._cam_axisZ, this._cam_axisY, this._cam_axisX);
     this._cam_axisY.normalize();
     this._cam_axisX.normalize();
+  }
+  
 
-    _cam_axisX = this._cam_axisX;
-    _cam_axisY = this._cam_axisY;
-    _cam_axisZ = this._cam_axisZ;
+  var idx, colidx, sizeX, sizeY, sizeZ; 
+
+  // particle loop
+  var index = 0;
+  var colorIndex = 0;
+  for (var p = 0; p < this.nbParticles; p++) { 
+
+    // particle rotation matrix
+    if (billboard) {
+      this.particles[p].rotation.x = 0.0;
+      this.particles[p].rotation.y = 0.0;
+    }
+   BABYLON.Matrix.RotationYawPitchRollToRef(this.particles[p].rotation.y, this.particles[p].rotation.x, this.particles[p].rotation.z, this._rotMatrix);
+
+    this.updateParticle(this.particles[p]);   // call to custom user function to update the particle position
+    for (var pt = 0; pt < this.particles[p]._shape.length; pt++) {
+      idx = index + pt * 3;
+      colidx = colorIndex + pt * 4;
+
+      BABYLON.Vector3.TransformCoordinatesToRef(this.particles[p]._shape[pt],this._rotMatrix, this._rotated);
+
+      sizeX = this._rotated.x * this.particles[p].scale.x;
+      sizeY = this._rotated.y * this.particles[p].scale.y;
+      sizeZ = this._rotated.z * this.particles[p].scale.z;
+      
+      this._positions[idx]     = this.particles[p].position.x + this._cam_axisX.x * sizeX + this._cam_axisY.x * sizeY + this._cam_axisZ.x * sizeZ;      
+      this._positions[idx + 1] = this.particles[p].position.y + this._cam_axisX.y * sizeX + this._cam_axisY.y * sizeY + this._cam_axisZ.y * sizeZ; 
+      this._positions[idx + 2] = this.particles[p].position.z + this._cam_axisX.z * sizeX + this._cam_axisY.z * sizeY + this._cam_axisZ.z * sizeZ; 
+
+      this._colors[colidx] = this.particles[p].color.x;
+      this._colors[colidx + 1] = this.particles[p].color.y;
+      this._colors[colidx + 2] = this.particles[p].color.z;
+      this._colors[colidx + 3] = this.particles[p].color.w;
+    }
+    index = idx + 3;
+    colorIndex = colidx + 4;
   }
 
-  var system = this;
-  var _rotMatrix = this._rotMatrix;
-  var _rotated = this._rotated;
-  var mesh = this.mesh;
-  
-  // colors
-  var colors = mesh.getVerticesData(BABYLON.VertexBuffer.ColorKind);
-  
-  var vertexPositionFunction = function(positions) {
-    var idx, colidx, pt, sizeX, sizeY, sizeZ; 
-    var nbPT;                               //  nbPT nb vertex per particle : 3 for triangle, 4 for quad, etc         
-    var posPart;                            // nb positions per particle = 3 * nbPT
-    var particle;
-    
-
-
-    // particle loop
-    var index = 0;
-    var colorIndex = 0;
-    for (var p = 0; p < nb; p++) { 
-      particle = particles[p];
-
-      // particle rotation matrix
-      if (billboard) {
-        particle.rotation.x = 0.0;
-        particle.rotation.y = 0.0;
-      }
-      BABYLON.Matrix.RotationYawPitchRollToRef(particle.rotation.y, particle.rotation.x, particle.rotation.z, _rotMatrix);
-
-      nbPT = particle._shape.length;
-      system.updateParticle(particle);   // call to custom user function to update the particle position
-      for (pt = 0; pt < nbPT; pt++) {
-        idx = index + pt * 3;
-        colidx = colorIndex + pt * 4;
-
-        BABYLON.Vector3.TransformCoordinatesToRef(particle._shape[pt], _rotMatrix, _rotated);
-
-        sizeX = _rotated.x * particle.scale.x;
-        sizeY = _rotated.y * particle.scale.y;
-        sizeZ = _rotated.z * particle.scale.z;
-        
-        positions[idx]     = particle.position.x + _cam_axisX.x * sizeX + _cam_axisY.x * sizeY + _cam_axisZ.x * sizeZ;      
-        positions[idx + 1] = particle.position.y + _cam_axisX.y * sizeX + _cam_axisY.y * sizeY + _cam_axisZ.y * sizeZ; 
-        positions[idx + 2] = particle.position.z + _cam_axisX.z * sizeX + _cam_axisY.z * sizeY + _cam_axisZ.z * sizeZ; 
-
-        colors[colidx] = particle.color.x;
-        colors[colidx + 1] = particle.color.y;
-        colors[colidx + 2] = particle.color.z;
-        colors[colidx + 3] = particle.color.w;
-      }
-      index = idx + 3;
-      colorIndex = colidx + 4;
-    }
-  };
-  this.beforeUpdateParticles();
-  this.mesh.updateVerticesData(BABYLON.VertexBuffer.ColorKind, colors, false, false);
-  this.mesh.updateMeshPositions(vertexPositionFunction, !this.mesh._areNormalsFrozen);
-  this.afterUpdateParticles();
-  //this.mesh.refreshBoundingInfo();
+this.beforeUpdateParticles();
+this.mesh.updateVerticesData(BABYLON.VertexBuffer.ColorKind, this._colors, false, false);
+this.mesh.updateVerticesData(BABYLON.VertexBuffer.PositionKind, this._positions, false, false);
+if (!this.mesh._areNormalsFrozen) {
+  var indices = this.mesh.getIndices();
+  BABYLON.VertexData.ComputeNormals(this._positions, this._indices, this._normals);
+  this.mesh.updateVerticesData(BABYLON.VertexBuffer.NormalKind, this._normals, false, false);
+}
+this.afterUpdateParticles();
+//this.mesh.refreshBoundingInfo();
 };
 
 

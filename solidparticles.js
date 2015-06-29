@@ -55,12 +55,12 @@ var createScene = function(canvas, engine) {
   var PS = new SolidParticleSystem('SPS', scene);
   //PS.addTriangles(200, 3);
   //PS.addQuads(200, 3);
-  //PS.addCubes(500, 2);
-  //PS.addTetrahedrons(1000, 6);
+  PS.addCubes(500, 2);
+  //PS.addTetrahedrons(200, 6);
   //PS.addPolygons(200, 8, 16);
   //PS.addPolygons(200, 10, 5);
   //PS.addPolygons(200, 8, 6);
-  PS.addShape(sphere, 200);
+  //PS.addShape(sphere, 200);
   //PS.addShape(knot, 50);
   //PS.addShape(cyl, 50);
   var mesh = PS.buildMesh();
@@ -69,15 +69,17 @@ var createScene = function(canvas, engine) {
   cyl.dispose();
   //mesh.material = mat;
   mesh.freezeWorldMatrix();
-  mesh.freezeNormals();
+  //mesh.freezeNormals();
 
 
   // define a custom SPS behavior
 
   PS.initParticles = function() {
     // just recycle everything
+    var fact = 60;
     for (var p = 0; p < this.nbParticles; p++) {
-      this.recycleParticle(this.particles[p]);
+      //this.recycleParticle(this.particles[p]);
+      this.particles[p].position = new BABYLON.Vector3((Math.random() - 0.5) * fact, (Math.random() - 0.5) * fact, (Math.random() - 0.5) * fact);
     }
   };
 
@@ -103,6 +105,9 @@ var createScene = function(canvas, engine) {
   };
 
   PS.updateParticle = function(particle) {
+    particle.rotation.y += 0.01;
+    //particle.color.x += 0.001;
+    /*
   if (particle.position.y < 0) {
       this.recycleParticle(particle);
     }
@@ -113,6 +118,7 @@ var createScene = function(canvas, engine) {
     particle.rotation.z += 0.1 * sign;
     particle.rotation.x += 0.05 * sign;
     particle.rotation.y += 0.008 * sign;
+    */
   };
 
 
