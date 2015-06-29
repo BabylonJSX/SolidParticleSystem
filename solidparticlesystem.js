@@ -325,9 +325,15 @@ SolidParticleSystem.prototype.resetParticle = function(particle) {
 // set all the particles
 SolidParticleSystem.prototype.setParticles = function(billboard) {
 
-  this._cam_axisX = this._axisX;
-  this._cam_axisY = this._axisY;
-  this._cam_axisZ = this._axisZ;
+  this._cam_axisX.x = 1;
+  this._cam_axisX.y = 0;
+  this._cam_axisX.z = 0;
+  this._cam_axisY.x = 0;
+  this._cam_axisY.y = 1;
+  this._cam_axisY.z = 0;
+  this._cam_axisZ.x = 0;
+  this._cam_axisZ.y = 0;
+  this._cam_axisZ.z = 1;
 
   if (billboard) {    // the particles will always face the camera
     
@@ -342,6 +348,7 @@ SolidParticleSystem.prototype.setParticles = function(billboard) {
     BABYLON.Vector3.CrossToRef(this._cam_axisZ, this._cam_axisY, this._cam_axisX);
     this._cam_axisY.normalize();
     this._cam_axisX.normalize();
+    this._cam_axisZ.normalize();
   }
   
   var idx = 0;
@@ -366,7 +373,7 @@ SolidParticleSystem.prototype.setParticles = function(billboard) {
       idx = index + pt * 3;
       colidx = colorIndex + pt * 4;
       BABYLON.Vector3.TransformCoordinatesToRef(this.particles[p]._shape[pt],this._rotMatrix, this._rotated);
-      
+
       this._positions[idx]     = this.particles[p].position.x + this._cam_axisX.x * this._rotated.x * this.particles[p].scale.x + this._cam_axisY.x * this._rotated.y * this.particles[p].scale.y + this._cam_axisZ.x * this._rotated.z * this.particles[p].scale.z;      
       this._positions[idx + 1] = this.particles[p].position.y + this._cam_axisX.y * this._rotated.x * this.particles[p].scale.x + this._cam_axisY.y * this._rotated.y * this.particles[p].scale.y + this._cam_axisZ.y * this._rotated.z * this.particles[p].scale.z; 
       this._positions[idx + 2] = this.particles[p].position.z + this._cam_axisX.z * this._rotated.x * this.particles[p].scale.x + this._cam_axisY.z * this._rotated.y * this.particles[p].scale.y + this._cam_axisZ.z * this._rotated.z * this.particles[p].scale.z; 

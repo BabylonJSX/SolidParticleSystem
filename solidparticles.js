@@ -55,7 +55,7 @@ var createScene = function(canvas, engine) {
   var PS = new SolidParticleSystem('SPS', scene);
   //PS.addTriangles(200, 3);
   //PS.addQuads(200, 3);
-  PS.addCubes(200, 2);
+  //PS.addCubes(200, 2);
   //PS.addTetrahedrons(200, 6);
   //PS.addPolygons(200, 8, 16);
   //PS.addPolygons(200, 10, 5);
@@ -68,7 +68,7 @@ var createScene = function(canvas, engine) {
   knot.dispose();
   cyl.dispose();
   mesh.material = mat;
-  mesh.freezeWorldMatrix();
+  //mesh.freezeWorldMatrix();
   mesh.freezeNormals();
 
 
@@ -130,8 +130,10 @@ var createScene = function(canvas, engine) {
   //scene.debugLayer.show();
   // animation
   scene.registerBeforeRender(function() {
-    PS.setParticles(false);
+    PS.setParticles(true);
     pl.position = camera.position;
+    //PS.mesh.rotation.y += 0.01;
+    //PS.mesh.rotation.x += 0.001;
   });
 
   return scene;
