@@ -344,35 +344,32 @@ SolidParticleSystem.prototype.setParticles = function(billboard) {
     this._cam_axisX.normalize();
   }
   
-
-  var idx, colidx, sizeX, sizeY, sizeZ; 
+  var idx = 0;
+  var index = 0;
+  var colidx = 0;
+  var colorIndex = 0;
 
   // particle loop
-  var index = 0;
-  var colorIndex = 0;
   for (var p = 0; p < this.nbParticles; p++) { 
+
+    // call to custom user function to update the particle properties
+    this.updateParticle(this.particles[p]);   
 
     // particle rotation matrix
     if (billboard) {
       this.particles[p].rotation.x = 0.0;
       this.particles[p].rotation.y = 0.0;
     }
-   BABYLON.Matrix.RotationYawPitchRollToRef(this.particles[p].rotation.y, this.particles[p].rotation.x, this.particles[p].rotation.z, this._rotMatrix);
-
-    this.updateParticle(this.particles[p]);   // call to custom user function to update the particle position
+    BABYLON.Matrix.RotationYawPitchRollToRef(this.particles[p].rotation.y, this.particles[p].rotation.x, this.particles[p].rotation.z, this._rotMatrix);
+  
     for (var pt = 0; pt < this.particles[p]._shape.length; pt++) {
       idx = index + pt * 3;
       colidx = colorIndex + pt * 4;
-
       BABYLON.Vector3.TransformCoordinatesToRef(this.particles[p]._shape[pt],this._rotMatrix, this._rotated);
-
-      sizeX = this._rotated.x * this.particles[p].scale.x;
-      sizeY = this._rotated.y * this.particles[p].scale.y;
-      sizeZ = this._rotated.z * this.particles[p].scale.z;
       
-      this._positions[idx]     = this.particles[p].position.x + this._cam_axisX.x * sizeX + this._cam_axisY.x * sizeY + this._cam_axisZ.x * sizeZ;      
-      this._positions[idx + 1] = this.particles[p].position.y + this._cam_axisX.y * sizeX + this._cam_axisY.y * sizeY + this._cam_axisZ.y * sizeZ; 
-      this._positions[idx + 2] = this.particles[p].position.z + this._cam_axisX.z * sizeX + this._cam_axisY.z * sizeY + this._cam_axisZ.z * sizeZ; 
+      this._positions[idx]     = this.particles[p].position.x + this._cam_axisX.x * this._rotated.x * this.particles[p].scale.x + this._cam_axisY.x * this._rotated.y * this.particles[p].scale.y + this._cam_axisZ.x * this._rotated.z * this.particles[p].scale.z;      
+      this._positions[idx + 1] = this.particles[p].position.y + this._cam_axisX.y * this._rotated.x * this.particles[p].scale.x + this._cam_axisY.y * this._rotated.y * this.particles[p].scale.y + this._cam_axisZ.y * this._rotated.z * this.particles[p].scale.z; 
+      this._positions[idx + 2] = this.particles[p].position.z + this._cam_axisX.z * this._rotated.x * this.particles[p].scale.x + this._cam_axisY.z * this._rotated.y * this.particles[p].scale.y + this._cam_axisZ.z * this._rotated.z * this.particles[p].scale.z; 
 
       this._colors[colidx] = this.particles[p].color.x;
       this._colors[colidx + 1] = this.particles[p].color.y;
