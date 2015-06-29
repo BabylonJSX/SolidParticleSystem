@@ -268,7 +268,7 @@ SolidParticleSystem.prototype.addPolygons = function(nb, size, vertexNb) {
 SolidParticleSystem.prototype.addShape = function(mesh, nb, shapeId) {
   shapeId = shapeId || 10;
   var meshPos = mesh.getVerticesData(BABYLON.VertexBuffer.PositionKind);
-  var meshInd = mesh._geometry._indices;
+  var meshInd = mesh.getIndices();
   var meshUV = mesh.getVerticesData(BABYLON.VertexBuffer.UVKind);
   var meshCol = mesh.getVerticesData(BABYLON.VertexBuffer.ColorKind);
   // shape
