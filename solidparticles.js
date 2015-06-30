@@ -130,7 +130,7 @@ var createScene = function(canvas, engine) {
   //scene.debugLayer.show();
   // animation
   scene.registerBeforeRender(function() {
-    PS.setParticles(false);
+    PS.setParticles(true);
     pl.position = camera.position;
     //PS.mesh.rotation.y += 0.01;
     //PS.mesh.rotation.x += 0.001;
