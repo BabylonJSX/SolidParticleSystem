@@ -117,7 +117,7 @@ example :
     particle.velocity = (new BABYLON.Vector3(Math.random() - 0.5, Math.random(), Math.random() - 0.5)).scaleInPlace(speed);
     particle.scale = (new BABYLON.Vector3(1, 1, 1)).scaleInPlace(Math.random() * 3 + 1);
     particle.rotation = (new BABYLON.Vector3(Math.random(), Math.random(), Math.random())).scaleInPlace(0.1);
-    particle.color = (new BABYLON.Vector4(Math.random() + 1.2, Math.random() + 1.2, Math.random() + 1.2, Math.random() + 1.2)).scaleInPlace(0.5);
+    particle.color = new BABYLON.Color4(Math.random(), Math.random(), Math.random(), Math.random());
   };
 
   PS.updateParticle = function(particle) {
