@@ -61,13 +61,13 @@ var createScene = function(canvas, engine) {
   //PS.addPolygons(200, 10, 5);
   //PS.addPolygons(200, 8, 6);
   //PS.addShape(sphere, 200);
-  PS.addShape(knot, 200);
+  PS.addShape(knot, 100);
   //PS.addShape(cyl, 50);
   var mesh = PS.buildMesh();
   sphere.dispose();
   knot.dispose();
   cyl.dispose();
-  mesh.material = mat;
+  //mesh.material = mat;
   //mesh.freezeWorldMatrix();
   mesh.freezeNormals();
 

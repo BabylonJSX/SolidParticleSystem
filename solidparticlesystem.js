@@ -40,7 +40,6 @@ SolidParticleSystem.prototype.buildMesh  = function() {
   vertexData.uvs = this._uvs;
   vertexData.colors = this._colors;
   var mesh = new BABYLON.Mesh(name, this._scene);
-  //mesh.hasVertexAlpha = true;
   vertexData.applyToMesh(mesh, true);
   this.mesh = mesh;
   return mesh;
@@ -340,7 +339,7 @@ SolidParticleSystem.prototype.setParticles = function(billboard) {
     // compute a fake camera position : un-rotate the camera position by the current mesh rotation
     BABYLON.Matrix.RotationYawPitchRollToRef(this.mesh.rotation.y, this.mesh.rotation.x, this.mesh.rotation.z, this._rotMatrix);
     this._rotMatrix.invertToRef(this._invertedMatrix);
-    BABYLON.Vector3.TransformCoordinatesToRef(this._camera.position, this._invertedMatrix, this._fakeCamPos);
+    BABYLON.Vector3.TransformCoordinatesToRef(this._camera.globalPosition, this._invertedMatrix, this._fakeCamPos);
     
     // set two orthogonal vectors (_cam_axisX and and _cam_axisY) to the cam-mesh axis (_cam_axisZ)
     (this._fakeCamPos).subtractToRef(this.mesh.position, this._cam_axisZ);
@@ -378,10 +377,10 @@ SolidParticleSystem.prototype.setParticles = function(billboard) {
       this._positions[idx + 1] = this.particles[p].position.y + this._cam_axisX.y * this._rotated.x * this.particles[p].scale.x + this._cam_axisY.y * this._rotated.y * this.particles[p].scale.y + this._cam_axisZ.y * this._rotated.z * this.particles[p].scale.z; 
       this._positions[idx + 2] = this.particles[p].position.z + this._cam_axisX.z * this._rotated.x * this.particles[p].scale.x + this._cam_axisY.z * this._rotated.y * this.particles[p].scale.y + this._cam_axisZ.z * this._rotated.z * this.particles[p].scale.z; 
 
-      this._colors[colidx] = this.particles[p].color.x;
-      this._colors[colidx + 1] = this.particles[p].color.y;
-      this._colors[colidx + 2] = this.particles[p].color.z;
-      this._colors[colidx + 3] = this.particles[p].color.w;
+      this._colors[colidx] = this.particles[p].color.r;
+      this._colors[colidx + 1] = this.particles[p].color.g;
+      this._colors[colidx + 2] = this.particles[p].color.b;
+      this._colors[colidx + 3] = this.particles[p].color.a;
     }
     index = idx + 3;
     colorIndex = colidx + 4;
