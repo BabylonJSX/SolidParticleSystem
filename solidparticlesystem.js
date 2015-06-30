@@ -331,14 +331,19 @@ SolidParticleSystem.prototype.setParticles = function(billboard) {
   this._cam_axisZ.x = 0;
   this._cam_axisZ.y = 0;
   this._cam_axisZ.z = 1;
+  this._fakeCamPos.x = this._camera.globalPosition.x;
+  this._fakeCamPos.y = this._camera.globalPosition.y;
+  this._fakeCamPos.z = this._camera.globalPosition.z;
 
-  if (billboard) {    // the particles will always face the camera
-    
-    // compute a fake camera position : un-rotate the camera position by the current mesh rotation
-    this._quaternionRotationYPR(this.mesh.rotation.y, this.mesh.rotation.x, this.mesh.rotation.z, this._rotMatrix);
-    this._quaternion.toRotationMatrix(this._rotMatrix);
-    this._rotMatrix.invertToRef(this._invertedMatrix);
-    BABYLON.Vector3.TransformCoordinatesToRef(this._camera.globalPosition, this._invertedMatrix, this._fakeCamPos);
+  // if the particles will always face the camera
+  if (billboard)  {    
+    if (this.mesh.rotation.y != 0 || this.mesh.rotation.x != 0 || this.mesh.rotation.z != 0) {
+      // compute a fake camera position : un-rotate the camera position by the current mesh rotation
+      this._quaternionRotationYPR(this.mesh.rotation.y, this.mesh.rotation.x, this.mesh.rotation.z, this._rotMatrix);
+      this._quaternion.toRotationMatrix(this._rotMatrix);
+      this._rotMatrix.invertToRef(this._invertedMatrix);
+      BABYLON.Vector3.TransformCoordinatesToRef(this._camera.globalPosition, this._invertedMatrix, this._fakeCamPos);
+    }
     
     // set two orthogonal vectors (_cam_axisX and and _cam_axisY) to the cam-mesh axis (_cam_axisZ)
     (this._fakeCamPos).subtractToRef(this.mesh.position, this._cam_axisZ);
@@ -347,8 +352,10 @@ SolidParticleSystem.prototype.setParticles = function(billboard) {
     this._cam_axisY.normalize();
     this._cam_axisX.normalize();
     this._cam_axisZ.normalize();
+
   }
   
+  BABYLON.Matrix.IdentityToRef(this._rotMatrix);
   var idx = 0;
   var index = 0;
   var colidx = 0;
@@ -358,15 +365,20 @@ SolidParticleSystem.prototype.setParticles = function(billboard) {
   for (var p = 0; p < this.nbParticles; p++) { 
 
     // call to custom user function to update the particle properties
-    this.updateParticle(this.particles[p]);   
+    this.updateParticle(this.particles[p]); 
+    this._rotated.x = this.particles[p].x;  
+    this._rotated.y = this.particles[p].y; 
+    this._rotated.z = this.particles[p].z; 
 
     // particle rotation matrix
     if (billboard) {
       this.particles[p].rotation.x = 0.0;
       this.particles[p].rotation.y = 0.0;
     }
-    this._quaternionRotationYPR(this.particles[p].rotation.y, this.particles[p].rotation.x, this.particles[p].rotation.z);
-    this._quaternion.toRotationMatrix(this._rotMatrix);
+    if (this.particles[p].rotation.y != 0 || this.particles[p].rotation.x != 0 || this.particles[p].z != 0) {
+      this._quaternionRotationYPR(this.particles[p].rotation.y, this.particles[p].rotation.x, this.particles[p].rotation.z);
+      this._quaternion.toRotationMatrix(this._rotMatrix);
+    }
   
     for (var pt = 0; pt < this.particles[p]._shape.length; pt++) {
       idx = index + pt * 3;

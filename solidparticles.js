@@ -55,15 +55,14 @@ var createScene = function(canvas, engine) {
   var PS = new SolidParticleSystem('SPS', scene);
   //PS.addTriangles(200, 3);
   //PS.addQuads(200, 3);
-  //PS.addCubes(200, 2);
+  PS.addCubes(200, 2);
   //PS.addTetrahedrons(200, 6);
-  console.log(PS.addPolygons(200, 8, 16));
   //PS.addPolygons(200, 10, 5);
   //PS.addPolygons(200, 8, 6);
   //PS.addShape(sphere, 200);
-  console.log(PS.addShape(knot, 100));
   //PS.addShape(cyl, 50);
   var mesh = PS.buildMesh();
+  mesh.rotation.y = Math.PI / 3;
   sphere.dispose();
   knot.dispose();
   cyl.dispose();
@@ -80,7 +79,7 @@ var createScene = function(canvas, engine) {
     for (var p = 0; p < this.nbParticles; p++) {
       //this.recycleParticle(this.particles[p]);
       this.particles[p].position = new BABYLON.Vector3((Math.random() - 0.5) * fact, (Math.random() - 0.5) * fact, (Math.random() - 0.5) * fact);
-      this.particles[p].rotation = new BABYLON.Vector3(Math.random(), Math.random(), Math.random());
+      //this.particles[p].rotation = new BABYLON.Vector3(Math.random(), Math.random(), Math.random());
     }
   };
 
@@ -107,7 +106,7 @@ var createScene = function(canvas, engine) {
 
   PS.updateParticle = function(particle) {
     particle.rotation.y += particle.position.x / 500;;
-    particle.rotation.z += particle.position.z / 500;
+    //particle.rotation.z += particle.position.z / 500;
     //particle.color.x += 0.001;
     /*
   if (particle.position.y < 0) {
@@ -130,7 +129,7 @@ var createScene = function(canvas, engine) {
   //scene.debugLayer.show();
   // animation
   scene.registerBeforeRender(function() {
-    PS.setParticles(true);
+    PS.setParticles(false);
     pl.position = camera.position;
     //PS.mesh.rotation.y += 0.01;
     //PS.mesh.rotation.x += 0.001;
