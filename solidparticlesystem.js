@@ -53,7 +53,7 @@ SolidParticleSystem.prototype.addParticle = function(p, idxpos, shape, shapeId) 
     _pos: idxpos,
     _shape: shape, 
     shapeId: shapeId,
-    color: new BABYLON.Vector4(1, 1, 1, 1),
+    color: new BABYLON.Color4(1, 1, 1, 1),
     position: BABYLON.Vector3.Zero(), 
     rotation : BABYLON.Vector3.Zero(),
     scale: new BABYLON.Vector3(1 ,1, 1), 
