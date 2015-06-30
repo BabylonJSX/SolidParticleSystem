@@ -422,8 +422,8 @@ SolidParticleSystem.prototype._quaternionRotationYPR = function(yaw, pitch, roll
   this._sinYaw = Math.sin(this._halfyaw);
   this._cosYaw = Math.cos(this._halfyaw);
   this._quaternion.x = (this._cosYaw * this._sinPitch * this._cosRoll) + (this._sinYaw * this._cosPitch * this._sinRoll);
-  this._quaternion.y = (this._sinYaw * this._cosPitch * this._cosRoll) + (this._cosYaw * this._sinPitch * this._sinRoll);
-  this._quaternion.z = (this._cosYaw * this._cosPitch * this._sinRoll) + (this._sinYaw * this._sinPitch * this._cosRoll);
+  this._quaternion.y = (this._sinYaw * this._cosPitch * this._cosRoll) - (this._cosYaw * this._sinPitch * this._sinRoll);
+  this._quaternion.z = (this._cosYaw * this._cosPitch * this._sinRoll) - (this._sinYaw * this._sinPitch * this._cosRoll);
   this._quaternion.w = (this._cosYaw * this._cosPitch * this._cosRoll) + (this._sinYaw * this._sinPitch * this._sinRoll);
 };
 
