@@ -73,6 +73,12 @@ You may access to some read-only properties :
 * **_idx_** : particle index
 * **_shapeId_** : shape model ID
 
+Actually each time you call a _SPS.addXXX()_ method the related newly created particle set shapeID is returned.
+```javascript
+var quadsID = SPS.addQuads(20, 2);
+```
+This is usefull if you want to apply a given behavior to some particle types only.    
+
 You have also access to some SPS properties :
 
 * **SPS.particles** : this is the array containing all the particles. You should iterate over this array in _initParticles()_ function for instance.
