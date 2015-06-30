@@ -57,11 +57,11 @@ var createScene = function(canvas, engine) {
   //PS.addQuads(200, 3);
   //PS.addCubes(200, 2);
   //PS.addTetrahedrons(200, 6);
-  //PS.addPolygons(200, 8, 16);
+  console.log(PS.addPolygons(200, 8, 16));
   //PS.addPolygons(200, 10, 5);
   //PS.addPolygons(200, 8, 6);
   //PS.addShape(sphere, 200);
-  PS.addShape(knot, 100);
+  console.log(PS.addShape(knot, 100));
   //PS.addShape(cyl, 50);
   var mesh = PS.buildMesh();
   sphere.dispose();
@@ -130,7 +130,7 @@ var createScene = function(canvas, engine) {
   //scene.debugLayer.show();
   // animation
   scene.registerBeforeRender(function() {
-    PS.setParticles(true);
+    PS.setParticles(false);
     pl.position = camera.position;
     //PS.mesh.rotation.y += 0.01;
     //PS.mesh.rotation.x += 0.001;

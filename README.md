@@ -71,7 +71,7 @@ You can obviously also create your own properties like _acceleration: Vector3_ o
 You may access to some read-only properties :   
 
 * **_idx_** : particle index
-* **_shapeId_** : shape model ID (0 = triangle, 1 = quad, 2 = cube, etc)
+* **_shapeId_** : shape model ID
 
 You have also access to some SPS properties :
 
