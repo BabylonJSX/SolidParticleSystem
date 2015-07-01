@@ -21,12 +21,12 @@ var createScene = function(canvas, engine) {
   //mat.backFaceCulling = false;
   //mat.wireframe = true;
   var texture = new BABYLON.Texture(url, scene);
-  //mat.diffuseTexture = texture;
-  //mat.diffuseTexture.hasAlpha = true;
+  mat.diffuseTexture = texture;
+  mat.diffuseTexture.hasAlpha = true;
   //mat.useSpecularOverAlpha = false;
   //mat.useAlphaFromDiffuseTexture = true;
   //mat.alpha = 0.9;
-  mat.diffuseColor = BABYLON.Color3.Red();
+  //mat.diffuseColor = BABYLON.Color3.Red();
 
 
 
@@ -38,16 +38,16 @@ var createScene = function(canvas, engine) {
   var gravity = -0.01;
   var PS = new SolidParticleSystem('SPS', scene);
   //PS.addTriangles(7000, 1);
-  PS.addQuads(100, 1);
-  PS.addCubes(100, 1);
-  PS.addTetrahedrons(100, 1);
-  PS.addPolygons(100, 1, 5);
-  PS.addShape(knot, 100);
-  PS.addShape(cyl, 100);
+  PS.addQuads(100, 10);
+  //PS.addCubes(100, 1);
+  //PS.addTetrahedrons(100, 1);
+  //PS.addPolygons(100, 1, 5);
+  //PS.addShape(knot, 100);
+  //PS.addShape(cyl, 100);
   var mesh = PS.buildMesh();
   knot.dispose();
   cyl.dispose();
-  //mesh.material = mat;
+  mesh.material = mat;
   mesh.freezeWorldMatrix();
   mesh.freezeNormals();
 
@@ -63,6 +63,7 @@ var createScene = function(canvas, engine) {
       this.particles[p].position = new BABYLON.Vector3((Math.random() - 0.5) * fact, (Math.random() - 0.5) * fact, (Math.random() - 0.5) * fact);
        this.particles[p].rotation = new BABYLON.Vector3(Math.random(), Math.random(), Math.random());
       this.particles[p].color = new BABYLON.Color4(Math.random(), Math.random(), Math.random(), 1);
+      this.particles[p].uvs = [0.25, 0, 0.75, 1];
     }
   };
 

@@ -8,6 +8,8 @@ var SolidParticleSystem = function(name, scene) {
   this.particles = [];
   this.nbParticles = 0;
   this.counter = 0;
+  this.useParticleColor = true;
+  this.useParticleTexture = true;
 
   // private members
   this._scene = scene;
@@ -58,26 +60,28 @@ SolidParticleSystem.prototype.buildMesh  = function() {
 
 
 // add a particle object in the particles array
-SolidParticleSystem.prototype._addParticle = function(p, idxpos, shape, shapeId) {
+SolidParticleSystem.prototype._addParticle = function(p, idxpos, shape, shapeUV, shapeId) {
   this.particles.push( {
     idx: p, 
     _pos: idxpos,
     _shape: shape, 
+    _shapeUV : shapeUV,
     shapeId: shapeId,
     color: new BABYLON.Color4(1, 1, 1, 1),
     position: BABYLON.Vector3.Zero(), 
     rotation : BABYLON.Vector3.Zero(),
     scale: new BABYLON.Vector3(1 ,1, 1), 
+    uvs: new Array(4),
     velocity: BABYLON.Vector3.Zero(),
     alive: true
   } );
 };
 
 // add all the particles of a given shape to the particles array
-SolidParticleSystem.prototype._addParticles = function(nb, builder, shape) {
+SolidParticleSystem.prototype._addParticles = function(nb, builder, shape, shapeUV) {
   for (var i = 0; i < nb; i++) {
-    builder(this._index, shape, this._positions, this._indices, this._uvs, this._colors);
-    this._addParticle(this.nbParticles + i, this._positions.length, shape, this._shapeCounter);
+    builder(this._index, shape, shapeUV, this._positions, this._indices, this._uvs, this._colors);
+    this._addParticle(this.nbParticles + i, this._positions.length, shape, shapeUV, this._shapeCounter);
     this._index += shape.length;
   }
   this.nbParticles += nb;
@@ -114,28 +118,30 @@ SolidParticleSystem.prototype.addTriangles = function(nb, size) {
 // Pre-build model : quad
 SolidParticleSystem.prototype.addQuads = function(nb, size) {
   var half = size / 2;
-  // shape
+  // shape and shapeUV
   var quadShape = [ 
     new BABYLON.Vector3(-half, -half, 0.0),
     new BABYLON.Vector3(half, -half, 0.0),
     new BABYLON.Vector3(half, half, 0.0),
     new BABYLON.Vector3(-half, half, 0.0),
   ];
+  var quadUV = [0,1, 1,1, 1,0, 0,0];
   // builder
-  var quadBuilder = function(p, shape, positions, indices, uvs, colors) {
+  var quadBuilder = function(p, shape, shapeUV, positions, indices, uvs, colors) {
     positions.push(shape[0].x, shape[0].y, shape[0].z);
     positions.push(shape[1].x, shape[1].y, shape[1].z);
     positions.push(shape[2].x, shape[2].y, shape[2].z);
     positions.push(shape[3].x, shape[3].y, shape[3].z);
     indices.push(p, p + 1, p + 2);
     indices.push(p, p + 2, p + 3);
-    uvs.push(0,1, 1,1, 1,0, 0,0);
+    //uvs.push(0,1, 1,1, 1,0, 0,0);
     for (var v = 0; v < 4; v++) {
       colors.push(1,1,1,1);
+      uvs.push(quadUV[v * 2], quadUV[v * 2 + 1]);
     }
   };
   // particles
-  this._addParticles(nb, quadBuilder, quadShape);
+  this._addParticles(nb, quadBuilder, quadShape, quadUV);
   return this._shapeCounter;
 };
 
@@ -335,6 +341,9 @@ SolidParticleSystem.prototype.setParticles = function(billboard) {
   this._fakeCamPos.y = this._camera.globalPosition.y;
   this._fakeCamPos.z = this._camera.globalPosition.z;
 
+  // custom beforeUpdate
+  this.beforeUpdateParticles();
+
   // if the particles will always face the camera
   if (billboard)  {    
     if (this.mesh.rotation.y != 0 || this.mesh.rotation.x != 0 || this.mesh.rotation.z != 0) {
@@ -360,46 +369,63 @@ SolidParticleSystem.prototype.setParticles = function(billboard) {
   var index = 0;
   var colidx = 0;
   var colorIndex = 0;
+  var uvidx = 0;
+  var uvIndex = 0;
+  var particle;
 
   // particle loop
   for (var p = 0; p < this.nbParticles; p++) { 
+    particle = this.particles[p];
 
     // call to custom user function to update the particle properties
-    this.updateParticle(this.particles[p]); 
-    this._rotated.x = this.particles[p].x;  
-    this._rotated.y = this.particles[p].y; 
-    this._rotated.z = this.particles[p].z; 
+    this.updateParticle(particle); 
+    this._rotated.x = particle.x;  
+    this._rotated.y = particle.y; 
+    this._rotated.z = particle.z; 
 
     // particle rotation matrix
     if (billboard) {
-      this.particles[p].rotation.x = 0.0;
-      this.particles[p].rotation.y = 0.0;
+      particle.rotation.x = 0.0;
+      particle.rotation.y = 0.0;
     }
-    if (this.particles[p].rotation.y != 0 || this.particles[p].rotation.x != 0 || this.particles[p].z != 0) {
-      this._quaternionRotationYPR(this.particles[p].rotation.y, this.particles[p].rotation.x, this.particles[p].rotation.z);
+    if (particle.rotation.y != 0 || particle.rotation.x != 0 || particle.z != 0) {
+      this._quaternionRotationYPR(particle.rotation.y, particle.rotation.x, particle.rotation.z);
       this._quaternionToRotationMatrix(this._quaternion, this._rotMatrix);
     }
   
-    for (var pt = 0; pt < this.particles[p]._shape.length; pt++) {
+    for (var pt = 0; pt < particle._shape.length; pt++) {
       idx = index + pt * 3;
       colidx = colorIndex + pt * 4;
-      BABYLON.Vector3.TransformCoordinatesToRef(this.particles[p]._shape[pt],this._rotMatrix, this._rotated);
+      uvidx = uvIndex + pt * 2;
+      BABYLON.Vector3.TransformCoordinatesToRef(particle._shape[pt], this._rotMatrix, this._rotated);
 
-      this._positions[idx]     = this.particles[p].position.x + this._cam_axisX.x * this._rotated.x * this.particles[p].scale.x + this._cam_axisY.x * this._rotated.y * this.particles[p].scale.y + this._cam_axisZ.x * this._rotated.z * this.particles[p].scale.z;      
-      this._positions[idx + 1] = this.particles[p].position.y + this._cam_axisX.y * this._rotated.x * this.particles[p].scale.x + this._cam_axisY.y * this._rotated.y * this.particles[p].scale.y + this._cam_axisZ.y * this._rotated.z * this.particles[p].scale.z; 
-      this._positions[idx + 2] = this.particles[p].position.z + this._cam_axisX.z * this._rotated.x * this.particles[p].scale.x + this._cam_axisY.z * this._rotated.y * this.particles[p].scale.y + this._cam_axisZ.z * this._rotated.z * this.particles[p].scale.z; 
+      this._positions[idx]     = particle.position.x + this._cam_axisX.x * this._rotated.x * particle.scale.x + this._cam_axisY.x * this._rotated.y * particle.scale.y + this._cam_axisZ.x * this._rotated.z * particle.scale.z;      
+      this._positions[idx + 1] = particle.position.y + this._cam_axisX.y * this._rotated.x * particle.scale.x + this._cam_axisY.y * this._rotated.y * particle.scale.y + this._cam_axisZ.y * this._rotated.z * particle.scale.z; 
+      this._positions[idx + 2] = particle.position.z + this._cam_axisX.z * this._rotated.x * particle.scale.x + this._cam_axisY.z * this._rotated.y * particle.scale.y + this._cam_axisZ.z * this._rotated.z * particle.scale.z; 
 
-      this._colors[colidx] = this.particles[p].color.r;
-      this._colors[colidx + 1] = this.particles[p].color.g;
-      this._colors[colidx + 2] = this.particles[p].color.b;
-      this._colors[colidx + 3] = this.particles[p].color.a;
+      if (this.useParticleColor) {
+        this._colors[colidx] = particle.color.r;
+        this._colors[colidx + 1] = particle.color.g;
+        this._colors[colidx + 2] = particle.color.b;
+        this._colors[colidx + 3] = particle.color.a;
+      }
+
+      if (this.useParticleTexture) {
+        this._uvs[uvidx] = particle._shapeUV[pt * 2] * (particle.uvs[2] - particle.uvs[0]) + particle.uvs[0];
+        this._uvs[uvidx + 1] = particle._shapeUV[pt * 2 + 1] * (particle.uvs[3] - particle.uvs[1]) + particle.uvs[1];
+      }
     }
     index = idx + 3;
     colorIndex = colidx + 4;
+    uvIndex = uvidx + 2;
   }
 
-this.beforeUpdateParticles();
-this.mesh.updateVerticesData(BABYLON.VertexBuffer.ColorKind, this._colors, false, false);
+if (this.useParticleColor) {
+  this.mesh.updateVerticesData(BABYLON.VertexBuffer.ColorKind, this._colors, false, false);
+}
+if (this.useParticleTexture) {
+  this.mesh.updateVerticesData(BABYLON.VertexBuffer.UVKind, this._uvs, false, false);
+}
 this.mesh.updateVerticesData(BABYLON.VertexBuffer.PositionKind, this._positions, false, false);
 if (!this.mesh._areNormalsFrozen) {
   var indices = this.mesh.getIndices();
