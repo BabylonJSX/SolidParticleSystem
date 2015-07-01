@@ -42,13 +42,13 @@ var createScene = function(canvas, engine) {
   PS.addCubes(100, 1);
   PS.addTetrahedrons(100, 1);
   PS.addPolygons(100, 1, 5);
-  PS.addShape(knot, 200);
-  PS.addShape(cyl, 300);
+  PS.addShape(knot, 100);
+  PS.addShape(cyl, 100);
   var mesh = PS.buildMesh();
   knot.dispose();
   cyl.dispose();
   //mesh.material = mat;
-  //mesh.freezeWorldMatrix();
+  mesh.freezeWorldMatrix();
   mesh.freezeNormals();
 
 
@@ -111,10 +111,10 @@ var createScene = function(canvas, engine) {
   //scene.debugLayer.show();
   // animation
   scene.registerBeforeRender(function() {
-    PS.setParticles(false);
+    PS.setParticles(true);
     pl.position = camera.position;
-    PS.mesh.rotation.y += 0.01;
-    PS.mesh.rotation.x += 0.001;
+    //PS.mesh.rotation.y += 0.01;
+    //PS.mesh.rotation.x += 0.001;
   });
 
   return scene;

@@ -340,7 +340,7 @@ SolidParticleSystem.prototype.setParticles = function(billboard) {
     if (this.mesh.rotation.y != 0 || this.mesh.rotation.x != 0 || this.mesh.rotation.z != 0) {
       // compute a fake camera position : un-rotate the camera position by the current mesh rotation
       this._quaternionRotationYPR(this.mesh.rotation.y, this.mesh.rotation.x, this.mesh.rotation.z, this._rotMatrix);
-      this._quaternion.toRotationMatrix(this._rotMatrix);
+      this._quaternionToRotationMatrix(this._quaternion, this._rotMatrix);
       this._rotMatrix.invertToRef(this._invertedMatrix);
       BABYLON.Vector3.TransformCoordinatesToRef(this._camera.globalPosition, this._invertedMatrix, this._fakeCamPos);
     }
@@ -377,7 +377,7 @@ SolidParticleSystem.prototype.setParticles = function(billboard) {
     }
     if (this.particles[p].rotation.y != 0 || this.particles[p].rotation.x != 0 || this.particles[p].z != 0) {
       this._quaternionRotationYPR(this.particles[p].rotation.y, this.particles[p].rotation.x, this.particles[p].rotation.z);
-      this._quaternion.toRotationMatrix(this._rotMatrix);
+      this._quaternionToRotationMatrix(this._quaternion, this._rotMatrix);
     }
   
     for (var pt = 0; pt < this.particles[p]._shape.length; pt++) {
@@ -427,6 +427,25 @@ SolidParticleSystem.prototype._quaternionRotationYPR = function(yaw, pitch, roll
   this._quaternion.w = (this._cosYaw * this._cosPitch * this._cosRoll) + (this._sinYaw * this._sinPitch * this._sinRoll);
 };
 
+// internal implemenation of BJS toRotationMatric()
+SolidParticleSystem.prototype._quaternionToRotationMatrix = function(quat, mat) {
+  mat.m[0] = 1.0 - (2.0 * (quat.y * quat.y + quat.z * quat.z));
+  mat.m[1] = 2.0 * (quat.x * quat.y + quat.z * quat.w);
+  mat.m[2] = 2.0 * (quat.z * quat.x - quat.y * quat.w);
+  mat.m[3] = 0;
+  mat.m[4] = 2.0 * (quat.x * quat.y - quat.z * quat.w);
+  mat.m[5] = 1.0 - (2.0 * (quat.z * quat.z + quat.x * quat.x));
+  mat.m[6] = 2.0 * (quat.y * quat.z + quat.x * quat.w);
+  mat.m[7] = 0;
+  mat.m[8] = 2.0 * (quat.z * quat.x + quat.y * quat.w);
+  mat.m[9] = 2.0 * (quat.y * quat.z - quat.x * quat.w);
+  mat.m[10] = 1.0 - (2.0 * (quat.y * quat.y + quat.x * quat.x));
+  mat.m[11] = 0;
+  mat.m[12] = 0;
+  mat.m[13] = 0;
+  mat.m[14] = 0;
+  mat.m[15] = 1.0;
+};
 
 
 
