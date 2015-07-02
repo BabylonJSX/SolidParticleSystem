@@ -34,23 +34,30 @@ var createScene = function(canvas, engine) {
 
   var knot = BABYLON.Mesh.CreateTorusKnot("knot", 2, 0.5, 32, 8, 2, 3, scene);
   var cyl = BABYLON.Mesh.CreateCylinder("cyl", 3, 2, 4, 6, 1, scene);
+  var sphere = BABYLON.Mesh.CreateSphere("sphere", 8, 5, scene);
+  var plane = BABYLON.Mesh.CreatePlane("plane", 10, scene);
 
   // Particle system
   var speed = 1;
   var gravity = -0.01;
   var PS = new SolidParticleSystem('SPS', scene);
-  //PS.addTriangles(7000, 1);
-  PS.addQuads(100, 40);
-  //PS.addCubes(100, 1);
-  //PS.addTetrahedrons(100, 1);
-  //PS.addPolygons(100, 1, 5);
+  //PS.addTriangles(100, 20);
+  //PS.addQuads(100, 20);
+  //PS.addCubes(100, 20);
+  //PS.addTetrahedrons(100, 20);
+  //PS.addPolygons(100, 20, 6);
   //PS.addShape(knot, 100);
   //PS.addShape(cyl, 100);
+  PS.addShape(plane, 100);
   var mesh = PS.buildMesh();
+
   knot.dispose();
   cyl.dispose();
+  sphere.dispose();
+  plane.dispose();
+
   mesh.material = mat;
-  //mesh.freezeWorldMatrix();
+  mesh.freezeWorldMatrix();
   mesh.freezeNormals();
 
   PS.billboard = true;
@@ -60,14 +67,14 @@ var createScene = function(canvas, engine) {
 
   PS.initParticles = function() {
     // just recycle everything
-    var fact = 200;
+    var fact = 100;
     for (var p = 0; p < this.nbParticles; p++) {
       //this.recycleParticle(this.particles[p]);
       var scale = Math.random() + 0.5;
       this.particles[p].position = new BABYLON.Vector3((Math.random() - 0.5) * fact, (Math.random() - 0.5) * fact, (Math.random() - 0.5) * fact);
       //this.particles[p].rotation = new BABYLON.Vector3(Math.random(), Math.random(), Math.random());
       //this.particles[p].color = new BABYLON.Color4(Math.random(), Math.random(), Math.random(), 1);
-      this.particles[p].uvs = [Math.random() * .5, Math.random() *.5, Math.random() * .5 + .5, Math.random() * .5 + .5];
+      //this.particles[p].uvs = [Math.random() * .5, Math.random() *.5, Math.random() * .5 + .5, Math.random() * .5 + .5];
     }
   };
 

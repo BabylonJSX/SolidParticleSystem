@@ -74,7 +74,7 @@ SolidParticleSystem.prototype._addParticle = function(p, idxpos, shape, shapeUV,
     position: BABYLON.Vector3.Zero(), 
     rotation : BABYLON.Vector3.Zero(),
     scale: new BABYLON.Vector3(1 ,1, 1), 
-    uvs: new Array(4),
+    uvs: [0,0, 1,1],
     velocity: BABYLON.Vector3.Zero(),
     alive: true
   } );
@@ -95,25 +95,26 @@ SolidParticleSystem.prototype._addParticles = function(nb, builder, shape, shape
 SolidParticleSystem.prototype.addTriangles = function(nb, size) {
   var half = size / 2;
   var h = size * Math.sqrt(3) / 4;
-  // shape
+  // shape and shapeUV
   var triangleShape = [
     new BABYLON.Vector3(-half, -h, 0),
     new BABYLON.Vector3(half, -h, 0),
     new BABYLON.Vector3(0, h, 0)
   ];
+  var triangleUV = [0,1, 1,1, 0.5,0];
   // builder
-  var triangleBuilder = function(p, shape, positions, indices, uvs, colors) {
+  var triangleBuilder = function(p, shape, shapeUV, positions, indices, uvs, colors) {
     positions.push(shape[0].x, shape[0].y, shape[0].z);
     positions.push(shape[1].x, shape[1].y, shape[1].z);
     positions.push(shape[2].x, shape[2].y, shape[2].z);
     indices.push(p, p + 1, p + 2);
-    uvs.push(0,1, 1,1, 0.5,0);
     for (var v = 0; v < 3; v++) {
       colors.push(1,1,1,1);
+      uvs.push(shapeUV[v * 2], shapeUV[v * 2 + 1]);
     }
   };
   // particles
-  this._addParticles(nb, triangleBuilder, triangleShape);
+  this._addParticles(nb, triangleBuilder, triangleShape, triangleUV);
   return this._shapeCounter;
 };
 
@@ -137,10 +138,9 @@ SolidParticleSystem.prototype.addQuads = function(nb, size) {
     positions.push(shape[3].x, shape[3].y, shape[3].z);
     indices.push(p, p + 1, p + 2);
     indices.push(p, p + 2, p + 3);
-    //uvs.push(0,1, 1,1, 1,0, 0,0);
     for (var v = 0; v < 4; v++) {
       colors.push(1,1,1,1);
-      uvs.push(quadUV[v * 2], quadUV[v * 2 + 1]);
+      uvs.push(shapeUV[v * 2], shapeUV[v * 2 + 1]);
     }
   };
   // particles
@@ -151,7 +151,7 @@ SolidParticleSystem.prototype.addQuads = function(nb, size) {
 
 SolidParticleSystem.prototype.addCubes = function(nb, size) {
   var half = size / 2;
-  // shape
+  // shape and shapeUV
   var cubeShape = [ 
     // front face
     new BABYLON.Vector3(-half, -half, -half), 
@@ -184,23 +184,30 @@ SolidParticleSystem.prototype.addCubes = function(nb, size) {
     new BABYLON.Vector3(half, -half, -half),
     new BABYLON.Vector3(-half, -half, -half)    
   ];
+  var cubeUV = [];
+  for (var f = 0; f < 6; f++) {
+    cubeUV.push(0,1, 1,1, 1,0, 0,0);
+  }
   // builder
-  var cubeBuilder = function(p, shape, positions, indices, uvs, colors) { 
+  var cubeBuilder = function(p, shape, shapeUV, positions, indices, uvs, colors) { 
     var i;
     for (i = 0; i < 24; i++) {
       positions.push(shape[i].x, shape[i].y, shape[i].z);
-      colors.push(1,1,1,1);
+      colors.push(1,1,1,1);  
     }
     var j;
     for (i = 0; i < 6; i++) {
       j = i * 4;
       indices.push(p + j, p + j + 1, p + j + 2);
-      indices.push(p + j, p + j + 2, p + j + 3);
-      uvs.push(0,1, 1,1, 1,0, 0,0);
+      indices.push(p + j, p + j + 2, p + j + 3);     
+      for (var u = 0; u < shapeUV.length; u++) {
+        uvs.push(shapeUV[u]);
+      }
+      
     }
   };
   // particles
-  this._addParticles(nb, cubeBuilder, cubeShape);
+  this._addParticles(nb, cubeBuilder, cubeShape, cubeUV);
   return this._shapeCounter;
 };
 
@@ -208,7 +215,7 @@ SolidParticleSystem.prototype.addTetrahedrons = function(nb, size) {
   var half = size / 2;
   var h = size * Math.sqrt(3) / 4;
   var high = size * Math.sqrt(6) / 3;
-  // shape
+  // shape and shapeUV
   var pt0 = new BABYLON.Vector3(-half, -h, -high / 4);
   var pt1 = new BABYLON.Vector3(half, -h, -high / 4);
   var pt2 = new BABYLON.Vector3(0, h, -high / 4);
@@ -219,8 +226,12 @@ SolidParticleSystem.prototype.addTetrahedrons = function(nb, size) {
     pt3, pt0, pt2,    // left face
     pt1, pt3, pt2     // right face
   ];
+  var tetraUV = [];
+  for (var f = 0; f < 4; f++) {
+    tetraUV.push(0,1, 1,1, 0.5,0);
+  }
   // builder
-  var tetraBuilder = function(p, shape, positions, indices, uvs, colors) { 
+  var tetraBuilder = function(p, shape, shapeUV, positions, indices, uvs, colors) { 
     var i;
     for (i = 0; i < 12; i++) {
       positions.push(shape[i].x, shape[i].y, shape[i].z);
@@ -230,11 +241,13 @@ SolidParticleSystem.prototype.addTetrahedrons = function(nb, size) {
     for (i = 0; i < 4; i++) {
       j = i * 3;
       indices.push(p + j, p + j + 1, p + j + 2);
-      uvs.push(0,1, 1,1, 0.5,0);
+      for (var u = 0; u < shapeUV.length; u++) {
+        uvs.push(shapeUV[u]);
+      }
     }
   };
   // particles
-  this._addParticles(nb, tetraBuilder, tetraShape);
+  this._addParticles(nb, tetraBuilder, tetraShape, tetraUV);
   return this._shapeCounter;
 };
 
@@ -242,31 +255,37 @@ SolidParticleSystem.prototype.addPolygons = function(nb, size, vertexNb) {
   vertexNb = vertexNb || 12;
   var half = size / 2;
   var pi2 = Math.PI * 2;
-  // shape
+  // shape and shapeUV
   var polygonShape = [];
+  var polygonUV = [];
   polygonShape.push(BABYLON.Vector3.Zero()); // central point
+  polygonUV.push(0.5, 0.5);
   var ang = 0;
   for (var i = 0; i < vertexNb; i++) {
     ang = i * pi2 / vertexNb;
-    polygonShape.push(new BABYLON.Vector3(half * Math.cos(ang), half * Math.sin(ang), 0));
+    var x = half * Math.cos(ang);
+    var y = half * Math.sin(ang);
+    var u = ((x / half) + 1) / 2;
+    var v = (1 - (y / half)) / 2;
+    polygonShape.push(new BABYLON.Vector3(x, y, 0));
+    polygonUV.push(u, v);
   }
   polygonShape.push(polygonShape[1]); // close the polygon
+  polygonUV.push(polygonUV[2], polygonUV[3]);
   // builder
-  var polygonBuilder = function(p, shape, positions, indices, uvs, colors) { 
+  var polygonBuilder = function(p, shape, shapeUV, positions, indices, uvs, colors) { 
     var i;
     for (i = 0; i < shape.length; i++) {
       positions.push(shape[i].x, shape[i].y, shape[i].z);
       colors.push(1,1,1,1);
-      var u = ((shape[i].x / half) + 1) / 2;
-      var v = (1 - (shape[i].y / half)) / 2;
-      uvs.push(u, v);
+      uvs.push(shapeUV[i * 2], shapeUV[i * 2 + 1]);
     }
     for (i = 1; i <= vertexNb; i++) {
       indices.push(p + i + 1, p, p + i);
     }
   };
   // particles
-  this._addParticles(nb, polygonBuilder, polygonShape);
+  this._addParticles(nb, polygonBuilder, polygonShape, polygonUV);
   return this._shapeCounter;
 };
 
@@ -275,7 +294,7 @@ SolidParticleSystem.prototype.addShape = function(mesh, nb) {
   var meshInd = mesh.getIndices();
   var meshUV = mesh.getVerticesData(BABYLON.VertexBuffer.UVKind);
   var meshCol = mesh.getVerticesData(BABYLON.VertexBuffer.ColorKind);
-  // shape
+  // shape and shapeUV
   var posToShape = function(positions) {
     var shape = [];
     for (var i = 0; i < positions.length; i += 3) {
@@ -283,7 +302,15 @@ SolidParticleSystem.prototype.addShape = function(mesh, nb) {
     }
     return shape;
   };
+  var uvsToSapheUV = function(uvs) {
+    var shapeUV = [];
+    for (var i = 0; i < uvs.length; i+= 2) {
+      shapeUV.push(uvs[i], uvs[i + 1]);
+    }
+    return shapeUV;
+  };
   var shape = posToShape(meshPos);
+  var shapeUV = uvsToSapheUV(meshUV);
   // builder
   var meshBuilder = function(p, shape, positions, meshInd, indices, meshUV, uvs, meshCol, colors) { 
     var i;
@@ -308,7 +335,7 @@ SolidParticleSystem.prototype.addShape = function(mesh, nb) {
   // particles
   for (var i = 0; i < nb; i++) {
     meshBuilder(this._index, shape, this._positions, meshInd, this._indices, meshUV, this._uvs, meshCol, this._colors);
-    this._addParticle(this.nbParticles + i, this._positions.length, shape, this._shapeCounter);
+    this._addParticle(this.nbParticles + i, this._positions.length, shape, shapeUV, this._shapeCounter);
     this._index += shape.length;
   }
   this.nbParticles += nb;
