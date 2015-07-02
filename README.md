@@ -39,9 +39,10 @@ var mesh = SPS.buildMesh();
 ```
 Now your SPS is ready to get a behavior. Once the behavior will be given (or not), you actually display the particles at their current positions with current properties with :
 ```javascript
-SPS.setParticles(billboarded);
+SPS.billboard = true;
+SPS.setParticles();
 ```
-_billboarded_ is a boolean (default _false_). If set to _true_, all the particles will face the cam and their _x_ and _y_ rotation values will be ignored. This is useful if you display only plane particles.
+_SPS.billboard_ is a boolean (default _false_). If set to _true_, all the particles will face the cam and their _x_ and _y_ rotation values will be ignored. This is useful if you display only plane particles.
 
 
 The _setParticles()_ function can be used in the BJS render loop.  
@@ -63,6 +64,7 @@ The particle properties that can be set are :
 * **_velocity_** : Vector3  default = (0, 0, 0)
 * **_color_** : Vector4  default = (1, 1, 1, 1)
 * **_scale_** : Vector3  default = (1, 1, 1)
+* **_uvs_** : Array(4) default = [0,0, 1,1]
 * **_alive_** : boolean  default = true
 
 Please note that all positions are expressed in the mesh **local space** and not in the World space.  
@@ -87,7 +89,16 @@ You have also access to some SPS properties :
 
 Here again, you can add your own properties like _capacity_ or _rate_ if needed.
 
-
+If you don't need some given features (ex : particle colors), you can disable/enable them at any time : 
+```javascript
+SPS.freezeParticleRotation();
+SPS.unfreezeParticleRotation();
+SPS.freezeParticleTexture();
+SPS.unfreezeParticleTexture();
+SPS.freezeParticleColor();
+SPS.unfreezeParticleColor();
+```
+All features are unfrozen by default. These affect the _SPS.setParticles()_ process only.
 example :
 
 ```javascript
@@ -139,6 +150,6 @@ example :
 
   // animation
   scene.registerBeforeRender(function() {
-    PS.setParticles(false);
+    PS.setParticles();
   });
   ```
