@@ -99,6 +99,7 @@ SPS.freezeParticleColor();
 SPS.unfreezeParticleColor();
 ```
 All features are unfrozen by default. These affect the _SPS.setParticles()_ process only.
+
 example :
 
 ```javascript
