@@ -42,7 +42,7 @@ var createScene = function(canvas, engine) {
   var gravity = -0.01;
   var PS = new SolidParticleSystem('SPS', scene);
   //PS.addTriangles(100, 20);
-  //PS.addQuads(100, 20);
+  PS.addQuads(10, 20);
   //PS.addCubes(100, 20);
   //PS.addTetrahedrons(100, 20);
   //PS.addPolygons(100, 10, 6);
@@ -60,9 +60,11 @@ var createScene = function(canvas, engine) {
   mesh.rotation.y = 0.3;
   mesh.freezeWorldMatrix();
   //mesh.freezeNormals();
+
+  
   
 
-  PS.billboard = true;
+  //PS.billboard = true;
 
 
   // define a custom SPS behavior
@@ -127,11 +129,12 @@ var createScene = function(canvas, engine) {
   // init all particle values
   PS.initParticles();
   PS.setParticles();
+  PS.freezeParticleRotation();
 
   //scene.debugLayer.show();
   // animation
   scene.registerBeforeRender(function() {
-    PS.setParticles();
+    //PS.setParticles();
     pl.position = camera.position;
     //PS.mesh.rotation.y += 0.01;
     //PS.mesh.rotation.x += 0.01;

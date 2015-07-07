@@ -554,27 +554,27 @@ SolidParticleSystem.prototype._quaternionToRotationMatrix = function() {
 };
 
 // Optimizers
-SolidParticleSystem.prototype.freezeParticleRotation = function() {
+SolidParticleSystem.prototype.enableParticleRotation = function() {
   this._useParticleRotation = false;
 }; 
 
-SolidParticleSystem.prototype.unfreezeParticleRotation = function() {
+SolidParticleSystem.prototype.disableParticleRotation = function() {
   this._useParticleRotation = true;
 }; 
 
-SolidParticleSystem.prototype.freezeParticleColor = function() {
+SolidParticleSystem.prototype.enableParticleColor = function() {
   this._useParticleColor = false;
 }; 
 
-SolidParticleSystem.prototype.unfreezeParticleColor = function() {
+SolidParticleSystem.prototype.disableParticleColor = function() {
   this._useParticleColor = true;
 }; 
 
-SolidParticleSystem.prototype.freezeParticleTexture = function() {
+SolidParticleSystem.prototype.enableParticleTexture = function() {
   this._useParticleTexture = false;
 }; 
 
-SolidParticleSystem.prototype.unfreezeParticleTexture = function() {
+SolidParticleSystem.prototype.disableParticleTexture = function() {
   this._useParticleTexture = true;
 }; 
 

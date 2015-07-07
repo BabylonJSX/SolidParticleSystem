@@ -91,12 +91,12 @@ Here again, you can add your own properties like _capacity_ or _rate_ if needed.
 
 If you don't need some given features (ex : particle colors), you can disable/enable them at any time : 
 ```javascript
-SPS.freezeParticleRotation();        // prevent from computing particle.rotation
-SPS.unfreezeParticleRotation();      // re-activate particle.rotation computing
-SPS.freezeParticleTexture();         // prevent from computing particle.uvs
-SPS.unfreezeParticleTexture();       // re-activate particle.uvs computing
-SPS.freezeParticleColor();           // prevent from computing particle.color
-SPS.unfreezeParticleColor();         // re-activate particle.color computing
+SPS.enableParticleRotation();        // prevent from computing particle.rotation
+SPS.disableParticleRotation();      // re-activate particle.rotation computing
+SPS.enableParticleTexture();         // prevent from computing particle.uvs
+SPS.disableParticleTexture();       // re-activate particle.uvs computing
+SPS.enableParticleColor();           // prevent from computing particle.color
+SPS.disableParticleColor();         // re-activate particle.color computing
 ```
 All features are unfrozen by default. These affect the _SPS.setParticles()_ process only.   
 
