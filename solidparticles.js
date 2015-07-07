@@ -16,13 +16,13 @@ var createScene = function(canvas, engine) {
   pl.intensity = 0.95;
 
 
-  //var url = "http://jerome.bousquie.fr/BJS/images/sc-snowflakes1.png";
-  var url = "https://upload.wikimedia.org/wikipedia/en/8/86/Einstein_tongue.jpg";
+  var url = "http://jerome.bousquie.fr/BJS/images/spriteAtlas.png";
+  //var url = "https://upload.wikimedia.org/wikipedia/en/8/86/Einstein_tongue.jpg";
   var mat = new BABYLON.StandardMaterial("mat1", scene);
-  //mat.backFaceCulling = false;
+  mat.backFaceCulling = false;
   //mat.wireframe = true;
   var texture = new BABYLON.Texture(url, scene);
-  texture.vScale = 0.5;
+  //texture.vScale = 0.5;
   mat.diffuseTexture = texture;
   //mat.diffuseTexture.hasAlpha = true;
   //mat.useSpecularOverAlpha = false;
@@ -41,14 +41,14 @@ var createScene = function(canvas, engine) {
   var speed = 1;
   var gravity = -0.01;
   var PS = new SolidParticleSystem('SPS', scene);
-  //PS.addTriangles(100, 20);
-  //PS.addQuads(100, 20);
+  PS.addTriangles(100, 20);
+  PS.addQuads(100, 20);
   //PS.addCubes(100, 20);
   //PS.addTetrahedrons(100, 20);
   //PS.addPolygons(100, 20, 6);
   //PS.addShape(knot, 100);
   //PS.addShape(cyl, 100);
-  PS.addShape(plane, 100);
+  //PS.addShape(plane, 100);
   var mesh = PS.buildMesh();
 
   knot.dispose();
@@ -57,8 +57,10 @@ var createScene = function(canvas, engine) {
   plane.dispose();
 
   mesh.material = mat;
+  //mesh.rotation.y = 0.3;
   mesh.freezeWorldMatrix();
   mesh.freezeNormals();
+  
 
   PS.billboard = true;
 
@@ -68,13 +70,17 @@ var createScene = function(canvas, engine) {
   PS.initParticles = function() {
     // just recycle everything
     var fact = 100;
+    var hSpriteNb =  6;  // 6 sprites per raw
+    var vSpriteNb =  4;  // 4 sprite raws
     for (var p = 0; p < this.nbParticles; p++) {
       //this.recycleParticle(this.particles[p]);
       var scale = Math.random() + 0.5;
       this.particles[p].position = new BABYLON.Vector3((Math.random() - 0.5) * fact, (Math.random() - 0.5) * fact, (Math.random() - 0.5) * fact);
       //this.particles[p].rotation = new BABYLON.Vector3(Math.random(), Math.random(), Math.random());
-      //this.particles[p].color = new BABYLON.Color4(Math.random(), Math.random(), Math.random(), 1);
-      //this.particles[p].uvs = [Math.random() * .5, Math.random() *.5, Math.random() * .5 + .5, Math.random() * .5 + .5];
+      this.particles[p].color = new BABYLON.Color4(Math.random(), Math.random(), Math.random(), 1);
+      var u = Math.floor(Math.random() * hSpriteNb)  / hSpriteNb;
+      var v = Math.floor(Math.random() * vSpriteNb) / vSpriteNb;
+      this.particles[p].uvs = [u, v, u + 1 / hSpriteNb, v + 1 /vSpriteNb];
     }
   };
 
@@ -120,7 +126,6 @@ var createScene = function(canvas, engine) {
 
   // init all particle values
   PS.initParticles();
-
 
   //scene.debugLayer.show();
   // animation

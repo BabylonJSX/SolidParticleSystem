@@ -35,6 +35,9 @@ var SolidParticleSystem = function(name, scene) {
   this._invertedMatrix = new BABYLON.Matrix();
   this._rotated = BABYLON.Vector3.Zero();
   this._quaternion = new BABYLON.Quaternion();
+  this._yaw = 0.0;
+  this._pitch = 0.0;
+  this._roll = 0.0;
   this._halfroll = 0.0;
   this._halfpitch = 0.0;
   this._halfyaw = 0.0;
@@ -376,8 +379,11 @@ SolidParticleSystem.prototype.setParticles = function() {
   // if the particles will always face the camera
   if (this.billboard)  {    
       // compute a fake camera position : un-rotate the camera position by the current mesh rotation
-      this._quaternionRotationYPR(this.mesh.rotation.y, this.mesh.rotation.x, this.mesh.rotation.z, this._rotMatrix);
-      this._quaternion.toRotationMatrix(this._rotMatrix);    
+      this._yaw = this.mesh.rotation.y;
+      this._pitch = this.mesh.rotation.x;
+      this._roll = this.mesh.rotation.z;
+      this._quaternionRotationYPR();
+      this._quaternionToRotationMatrix(this._quaternion, this._rotMatrix);    
       this._rotMatrix.invertToRef(this._invertedMatrix);
       BABYLON.Vector3.TransformCoordinatesToRef(this._camera.globalPosition, this._invertedMatrix, this._fakeCamPos);
 
@@ -412,7 +418,10 @@ SolidParticleSystem.prototype.setParticles = function() {
       this._particle.rotation.y = 0.0;
     }
     if (this._useParticleRotation) {
-      this._quaternionRotationYPR(this._particle.rotation.y, this._particle.rotation.x, this._particle.rotation.z);
+      this._yaw = this._particle.rotation.y;
+      this._pitch = this._particle.rotation.x;
+      this._roll = this._particle.rotation.z;
+      this._quaternionRotationYPR();
       this._quaternionToRotationMatrix(this._quaternion, this._rotMatrix);
     }
   
@@ -460,10 +469,10 @@ this.afterUpdateParticles();
 };
 
 // internal implementation of BJS Quaternion.RotationYawPitchRollToRef()
-SolidParticleSystem.prototype._quaternionRotationYPR = function(yaw, pitch, roll) {
-  this._halfroll = roll * 0.5;
-  this._halfpitch = pitch * 0.5;
-  this._halfyaw = yaw * 0.5;
+SolidParticleSystem.prototype._quaternionRotationYPR = function() {
+  this._halfroll = this._yaw * 0.5;
+  this._halfpitch = this._pitch * 0.5;
+  this._halfyaw = this._yaw * 0.5;
   this._sinRoll = Math.sin(this._halfroll);
   this._cosRoll = Math.cos(this._halfroll);
   this._sinPitch = Math.sin(this._halfpitch);
