@@ -62,7 +62,7 @@ var createScene = function(canvas, engine) {
   mesh.freezeNormals();
   
 
-  PS.billboard = true;
+  //PS.billboard = true;
 
 
   // define a custom SPS behavior
@@ -131,7 +131,7 @@ var createScene = function(canvas, engine) {
   //scene.debugLayer.show();
   // animation
   scene.registerBeforeRender(function() {
-    PS.setParticles();
+    //PS.setParticles();
     pl.position = camera.position;
     //PS.mesh.rotation.y += 0.01;
     //PS.mesh.rotation.x += 0.01;

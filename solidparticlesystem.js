@@ -49,6 +49,51 @@ var SolidParticleSystem = function(name, scene) {
   this._cosYaw = 0.0;
 };
 
+// dispose the SPS
+SolidParticleSystem.prototype.dispose = function() {
+  this.mesh.dispose();
+  this.mesh = null;
+  this.particles.length = 0;
+  this.nbParticles = null;
+  this.billboard = null;
+  this.counter = null;
+  this._scene = null;
+  this._positions.length = 0;
+  this._indices.length = 0;
+  this._normals.length = 0;
+  this._colors.length = 0;
+  this._uvs.length = 0;
+  this._index = null;
+  this._shapeCounter = null;
+  this._useParticleColor = null;
+  this._useParticleTexture = null;
+  this._useParticleRotation = null;
+  this._cam_axisZ = null;
+  this._cam_axisY = null;
+  this._cam_axisX = null;
+  this._axisX = null;
+  this._axisY = null;
+  this._axisZ = null;
+  this._camera = null;
+  this._fakeCamPos = null;
+  this._rotMatrix = null;
+  this._invertedMatrix = null;
+  this._rotated = null;
+  this._quaternion = null;
+  this._yaw = null;
+  this._pitch = null;
+  this._roll = null;
+  this._halfroll = null;
+  this._halfpitch = null;
+  this._halfyaw = null;
+  this._sinRoll = null;
+  this._cosRoll = null;
+  this._sinPitch = null;
+  this._cosPitch = null;
+  this._sinYaw = null;
+  this._cosYaw = null;
+};
+
 // build the SPS mesh : returns the mesh
 SolidParticleSystem.prototype.buildMesh  = function() {
   BABYLON.VertexData.ComputeNormals(this._positions, this._indices, this._normals);
