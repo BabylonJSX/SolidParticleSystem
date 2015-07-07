@@ -42,7 +42,7 @@ Now your SPS is ready to get a behavior. Once the behavior will be given (or not
 SPS.billboard = true;
 SPS.setParticles();
 ```
-_SPS.billboard_ is a boolean (default _false_). If set to _true_, all the particles will face the cam and their _x_ and _y_ rotation values will be ignored. This is useful if you display only plane particles.
+_SPS.billboard_ is a boolean (default _false_). If set to _true_, all the particles will face the cam and their _x_ and _y_ rotation values will be ignored. This is useful if you display only plane particles. You need to call _SPS.setParticles()_ within the _scene.registerBeforeRender()_ function in order to display the SPS in billboard mode.   
 
 
 The _setParticles()_ function can be used in the BJS render loop.  
@@ -98,7 +98,12 @@ SPS.unfreezeParticleTexture();       // re-activate particle.uvs computing
 SPS.freezeParticleColor();           // prevent from computing particle.color
 SPS.unfreezeParticleColor();         // re-activate particle.color computing
 ```
-All features are unfrozen by default. These affect the _SPS.setParticles()_ process only.
+All features are unfrozen by default. These affect the _SPS.setParticles()_ process only.   
+
+If you don't need your SPS any longer, you can dispose it to free the memory
+```javascript
+SPS.dispose();
+```
 
 example :
 
