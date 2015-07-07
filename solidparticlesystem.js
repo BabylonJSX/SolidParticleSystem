@@ -96,6 +96,9 @@ SolidParticleSystem.prototype.dispose = function() {
 
 // build the SPS mesh : returns the mesh
 SolidParticleSystem.prototype.buildMesh  = function() {
+  if (this.nbParticles == 0) {
+    this.addTriangles(1, 1);
+  }
   BABYLON.VertexData.ComputeNormals(this._positions, this._indices, this._normals);
   var vertexData = new BABYLON.VertexData();
   vertexData.positions = this._positions;

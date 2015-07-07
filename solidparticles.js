@@ -12,7 +12,7 @@ var createScene = function(canvas, engine) {
   light.intensity = 0.9;
   var pl = new BABYLON.PointLight("pl", new BABYLON.Vector3(0, 0, 0), scene);
   pl.diffuse = new BABYLON.Color3(1, 1, 1);
-  pl.specular = new BABYLON.Color3(0.8, 0.7, 0);
+  pl.specular = new BABYLON.Color3(0.2, 0.2, 0.8);
   pl.intensity = 0.95;
 
 
@@ -45,7 +45,7 @@ var createScene = function(canvas, engine) {
   //PS.addQuads(100, 20);
   //PS.addCubes(100, 20);
   //PS.addTetrahedrons(100, 20);
-  PS.addPolygons(100, 20, 6);
+  //PS.addPolygons(100, 10, 6);
   //PS.addShape(knot, 100);
   //PS.addShape(cyl, 100);
   //PS.addShape(plane, 100);
@@ -59,10 +59,10 @@ var createScene = function(canvas, engine) {
   mesh.material = mat;
   mesh.rotation.y = 0.3;
   mesh.freezeWorldMatrix();
-  mesh.freezeNormals();
+  //mesh.freezeNormals();
   
 
-  //PS.billboard = true;
+  PS.billboard = true;
 
 
   // define a custom SPS behavior
@@ -108,7 +108,7 @@ var createScene = function(canvas, engine) {
   PS.updateParticle = function(particle) {  
     //particle.uvs = [Math.random() * .5, Math.random() *.5, Math.random() * .5 + .5, Math.random() * .5 + .5];
     //particle.rotation.y += particle.position.x / 500;;
-    particle.rotation.z += 0.1;
+    particle.rotation.z +=  1 / (particle.position.z + 0.1);
     /*
     if (particle.position.y < 0) {
       this.recycleParticle(particle);
@@ -131,7 +131,7 @@ var createScene = function(canvas, engine) {
   //scene.debugLayer.show();
   // animation
   scene.registerBeforeRender(function() {
-    //PS.setParticles();
+    PS.setParticles();
     pl.position = camera.position;
     //PS.mesh.rotation.y += 0.01;
     //PS.mesh.rotation.x += 0.01;
