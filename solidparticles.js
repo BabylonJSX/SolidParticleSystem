@@ -41,11 +41,11 @@ var createScene = function(canvas, engine) {
   var speed = 1;
   var gravity = -0.01;
   var PS = new SolidParticleSystem('SPS', scene);
-  PS.addTriangles(100, 20);
-  PS.addQuads(100, 20);
+  //PS.addTriangles(100, 20);
+  //PS.addQuads(100, 20);
   //PS.addCubes(100, 20);
   //PS.addTetrahedrons(100, 20);
-  //PS.addPolygons(100, 20, 6);
+  PS.addPolygons(100, 20, 6);
   //PS.addShape(knot, 100);
   //PS.addShape(cyl, 100);
   //PS.addShape(plane, 100);
@@ -57,7 +57,7 @@ var createScene = function(canvas, engine) {
   plane.dispose();
 
   mesh.material = mat;
-  //mesh.rotation.y = 0.3;
+  mesh.rotation.y = 0.3;
   mesh.freezeWorldMatrix();
   mesh.freezeNormals();
   
@@ -108,7 +108,7 @@ var createScene = function(canvas, engine) {
   PS.updateParticle = function(particle) {  
     //particle.uvs = [Math.random() * .5, Math.random() *.5, Math.random() * .5 + .5, Math.random() * .5 + .5];
     //particle.rotation.y += particle.position.x / 500;;
-    //particle.rotation.z += particle.position.z / 500;
+    particle.rotation.z += 0.1;
     /*
     if (particle.position.y < 0) {
       this.recycleParticle(particle);
@@ -126,6 +126,7 @@ var createScene = function(canvas, engine) {
 
   // init all particle values
   PS.initParticles();
+  PS.setParticles();
 
   //scene.debugLayer.show();
   // animation

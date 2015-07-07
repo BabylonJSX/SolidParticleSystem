@@ -383,7 +383,7 @@ SolidParticleSystem.prototype.setParticles = function() {
       this._pitch = this.mesh.rotation.x;
       this._roll = this.mesh.rotation.z;
       this._quaternionRotationYPR();
-      this._quaternionToRotationMatrix(this._quaternion, this._rotMatrix);    
+      this._quaternionToRotationMatrix();    
       this._rotMatrix.invertToRef(this._invertedMatrix);
       BABYLON.Vector3.TransformCoordinatesToRef(this._camera.globalPosition, this._invertedMatrix, this._fakeCamPos);
 
@@ -422,7 +422,7 @@ SolidParticleSystem.prototype.setParticles = function() {
       this._pitch = this._particle.rotation.x;
       this._roll = this._particle.rotation.z;
       this._quaternionRotationYPR();
-      this._quaternionToRotationMatrix(this._quaternion, this._rotMatrix);
+      this._quaternionToRotationMatrix();
     }
   
     for (var pt = 0; pt < this._particle._shape.length; pt++) {
@@ -470,7 +470,7 @@ this.afterUpdateParticles();
 
 // internal implementation of BJS Quaternion.RotationYawPitchRollToRef()
 SolidParticleSystem.prototype._quaternionRotationYPR = function() {
-  this._halfroll = this._yaw * 0.5;
+  this._halfroll = this._roll * 0.5;
   this._halfpitch = this._pitch * 0.5;
   this._halfyaw = this._yaw * 0.5;
   this._sinRoll = Math.sin(this._halfroll);
@@ -486,23 +486,23 @@ SolidParticleSystem.prototype._quaternionRotationYPR = function() {
 };
 
 // internal implemenation of BJS toRotationMatric()
-SolidParticleSystem.prototype._quaternionToRotationMatrix = function(quat, mat) {
-  mat.m[0] = 1.0 - (2.0 * (quat.y * quat.y + quat.z * quat.z));
-  mat.m[1] = 2.0 * (quat.x * quat.y + quat.z * quat.w);
-  mat.m[2] = 2.0 * (quat.z * quat.x - quat.y * quat.w);
-  mat.m[3] = 0;
-  mat.m[4] = 2.0 * (quat.x * quat.y - quat.z * quat.w);
-  mat.m[5] = 1.0 - (2.0 * (quat.z * quat.z + quat.x * quat.x));
-  mat.m[6] = 2.0 * (quat.y * quat.z + quat.x * quat.w);
-  mat.m[7] = 0;
-  mat.m[8] = 2.0 * (quat.z * quat.x + quat.y * quat.w);
-  mat.m[9] = 2.0 * (quat.y * quat.z - quat.x * quat.w);
-  mat.m[10] = 1.0 - (2.0 * (quat.y * quat.y + quat.x * quat.x));
-  mat.m[11] = 0;
-  mat.m[12] = 0;
-  mat.m[13] = 0;
-  mat.m[14] = 0;
-  mat.m[15] = 1.0;
+SolidParticleSystem.prototype._quaternionToRotationMatrix = function() {
+  this._rotMatrix.m[0] = 1.0 - (2.0 * (this._quaternion.y * this._quaternion.y + this._quaternion.z * this._quaternion.z));
+  this._rotMatrix.m[1] = 2.0 * (this._quaternion.x * this._quaternion.y + this._quaternion.z * this._quaternion.w);
+  this._rotMatrix.m[2] = 2.0 * (this._quaternion.z * this._quaternion.x - this._quaternion.y * this._quaternion.w);
+  this._rotMatrix.m[3] = 0;
+  this._rotMatrix.m[4] = 2.0 * (this._quaternion.x * this._quaternion.y - this._quaternion.z * this._quaternion.w);
+  this._rotMatrix.m[5] = 1.0 - (2.0 * (this._quaternion.z * this._quaternion.z + this._quaternion.x * this._quaternion.x));
+  this._rotMatrix.m[6] = 2.0 * (this._quaternion.y * this._quaternion.z + this._quaternion.x * this._quaternion.w);
+  this._rotMatrix.m[7] = 0;
+  this._rotMatrix.m[8] = 2.0 * (this._quaternion.z * this._quaternion.x + this._quaternion.y * this._quaternion.w);
+  this._rotMatrix.m[9] = 2.0 * (this._quaternion.y * this._quaternion.z - this._quaternion.x * this._quaternion.w);
+  this._rotMatrix.m[10] = 1.0 - (2.0 * (this._quaternion.y * this._quaternion.y + this._quaternion.x * this._quaternion.x));
+  this._rotMatrix.m[11] = 0;
+  this._rotMatrix.m[12] = 0;
+  this._rotMatrix.m[13] = 0;
+  this._rotMatrix.m[14] = 0;
+  this._rotMatrix.m[15] = 1.0;
 };
 
 // Optimizers
