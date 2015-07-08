@@ -42,11 +42,11 @@ var createScene = function(canvas, engine) {
   var gravity = -0.01;
   var PS = new SolidParticleSystem('SPS', scene);
   //PS.addTriangles(100, 20);
-  PS.addQuads(10, 20);
-  //PS.addCubes(100, 20);
-  //PS.addTetrahedrons(100, 20);
+  //PS.addQuads(10, 20);
+  PS.addCubes(100, 5);
+  //PS.addTetrahedrons(100, 5);
   //PS.addPolygons(100, 10, 6);
-  //PS.addShape(knot, 100);
+  PS.addShape(knot, 50);
   //PS.addShape(cyl, 100);
   //PS.addShape(plane, 100);
   var mesh = PS.buildMesh();
@@ -61,7 +61,8 @@ var createScene = function(canvas, engine) {
   mesh.freezeWorldMatrix();
   //mesh.freezeNormals();
 
-  
+  var axis = BABYLON.Vector3.Zero();  
+  var ang = 0;
   
 
   //PS.billboard = true;
@@ -74,11 +75,13 @@ var createScene = function(canvas, engine) {
     var fact = 100;
     var hSpriteNb =  6;  // 6 sprites per raw
     var vSpriteNb =  4;  // 4 sprite raws
-    for (var p = 0; p < this.nbParticles; p++) {
+    
+      for (var p = 0; p < this.nbParticles; p++) {
       //this.recycleParticle(this.particles[p]);
       var scale = Math.random() + 0.5;
       this.particles[p].position = new BABYLON.Vector3((Math.random() - 0.5) * fact, (Math.random() - 0.5) * fact, (Math.random() - 0.5) * fact);
       //this.particles[p].rotation = new BABYLON.Vector3(Math.random(), Math.random(), Math.random());
+      this.particles[p].quaternion = new BABYLON.Quaternion();
       this.particles[p].color = new BABYLON.Color4(Math.random(), Math.random(), Math.random(), 1);
       var u = Math.floor(Math.random() * hSpriteNb)  / hSpriteNb;
       var v = Math.floor(Math.random() * vSpriteNb) / vSpriteNb;
@@ -110,7 +113,20 @@ var createScene = function(canvas, engine) {
   PS.updateParticle = function(particle) {  
     //particle.uvs = [Math.random() * .5, Math.random() *.5, Math.random() * .5 + .5, Math.random() * .5 + .5];
     //particle.rotation.y += particle.position.x / 500;;
-    particle.rotation.z +=  1 / (particle.position.z + 0.1);
+    //particle.rotation.z +=  1 / (particle.position.z + 0.1);
+    
+    axis.x = particle.position.x;
+    axis.y = particle.position.y;
+    axis.z = particle.position.z;
+    axis.normalize();  
+
+    ang += particle.idx / 100000;
+    var sin = Math.sin(ang / 2);
+    particle.quaternion.w = Math.cos(ang / 2);
+    particle.quaternion.x = axis.x * sin;
+    particle.quaternion.y = axis.y * sin;
+    particle.quaternion.z = axis.z * sin;
+
     /*
     if (particle.position.y < 0) {
       this.recycleParticle(particle);
@@ -129,12 +145,11 @@ var createScene = function(canvas, engine) {
   // init all particle values
   PS.initParticles();
   PS.setParticles();
-  PS.freezeParticleRotation();
 
   //scene.debugLayer.show();
   // animation
   scene.registerBeforeRender(function() {
-    //PS.setParticles();
+    PS.setParticles();
     pl.position = camera.position;
     //PS.mesh.rotation.y += 0.01;
     //PS.mesh.rotation.x += 0.01;

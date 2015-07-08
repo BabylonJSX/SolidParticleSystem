@@ -124,6 +124,7 @@ SolidParticleSystem.prototype._addParticle = function(p, idxpos, shape, shapeUV,
     color: new BABYLON.Color4(1, 1, 1, 1),
     position: BABYLON.Vector3.Zero(), 
     rotation : BABYLON.Vector3.Zero(),
+    quaternion : undefined,
     scale: new BABYLON.Vector3(1 ,1, 1), 
     uvs: [0,0, 1,1],
     velocity: BABYLON.Vector3.Zero(),
@@ -466,10 +467,18 @@ SolidParticleSystem.prototype.setParticles = function() {
       this._particle.rotation.y = 0.0;
     }
     if (this._useParticleRotation) {
-      this._yaw = this._particle.rotation.y;
-      this._pitch = this._particle.rotation.x;
-      this._roll = this._particle.rotation.z;
-      this._quaternionRotationYPR();
+      if (this._particle.quaternion) {
+        this._quaternion.x = this._particle.quaternion.x;
+        this._quaternion.y = this._particle.quaternion.y;
+        this._quaternion.z = this._particle.quaternion.z;
+        this._quaternion.w = this._particle.quaternion.w;
+      }
+      else {
+        this._yaw = this._particle.rotation.y;
+        this._pitch = this._particle.rotation.x;
+        this._roll = this._particle.rotation.z;
+        this._quaternionRotationYPR();
+      }
       this._quaternionToRotationMatrix();
     }
   
