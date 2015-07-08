@@ -61,11 +61,15 @@ The particle properties that can be set are :
 
 * **_position_** : Vector3  default = (0, 0, 0)
 * **_rotation_** : Vector3  default = (0, 0, 0)  
+* **_quaternion_** : Vector3  default = undefined
 * **_velocity_** : Vector3  default = (0, 0, 0)
 * **_color_** : Vector4  default = (1, 1, 1, 1)
 * **_scale_** : Vector3  default = (1, 1, 1)
 * **_uvs_** : Array(4) default = [0,0, 1,1]
 * **_alive_** : boolean  default = true
+
+If you set a particle rotation quaternion, its rotation property will then be ignored.    
+If you set your SPS in billboard mode, you should only set a _rotation.z_ value.   
 
 Please note that all positions are expressed in the mesh **local space** and not in the World space.  
 
@@ -91,14 +95,14 @@ Here again, you can add your own properties like _capacity_ or _rate_ if needed.
 
 If you don't need some given features (ex : particle colors), you can disable/enable them at any time : 
 ```javascript
-SPS.enableParticleRotation();        // prevent from computing particle.rotation
+SPS.enableParticleRotation();       // prevent from computing particle.rotation
 SPS.disableParticleRotation();      // re-activate particle.rotation computing
-SPS.enableParticleTexture();         // prevent from computing particle.uvs
+SPS.enableParticleTexture();        // prevent from computing particle.uvs
 SPS.disableParticleTexture();       // re-activate particle.uvs computing
-SPS.enableParticleColor();           // prevent from computing particle.color
+SPS.enableParticleColor();          // prevent from computing particle.color
 SPS.disableParticleColor();         // re-activate particle.color computing
 ```
-All features are unfrozen by default. These affect the _SPS.setParticles()_ process only.   
+All features are enabled by default. These affect the _SPS.setParticles()_ process only.   
 
 If you don't need your SPS any longer, you can dispose it to free the memory
 ```javascript
