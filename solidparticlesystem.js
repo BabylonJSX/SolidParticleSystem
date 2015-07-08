@@ -23,6 +23,7 @@ var SolidParticleSystem = function(name, scene) {
   this._useParticleColor = true;
   this._useParticleTexture = true;
   this._useParticleRotation = true;
+  this._useParticleVertex = false;
   this._cam_axisZ = BABYLON.Vector3.Zero();
   this._cam_axisY = BABYLON.Vector3.Zero();
   this._cam_axisX = BABYLON.Vector3.Zero();
@@ -35,6 +36,7 @@ var SolidParticleSystem = function(name, scene) {
   this._invertedMatrix = new BABYLON.Matrix();
   this._rotated = BABYLON.Vector3.Zero();
   this._quaternion = new BABYLON.Quaternion();
+  this._vertex = BABYLON.Vector3.Zero();
   this._yaw = 0.0;
   this._pitch = 0.0;
   this._roll = 0.0;
@@ -68,6 +70,7 @@ SolidParticleSystem.prototype.dispose = function() {
   this._useParticleColor = null;
   this._useParticleTexture = null;
   this._useParticleRotation = null;
+  this._useParticleVertex = null;
   this._cam_axisZ = null;
   this._cam_axisY = null;
   this._cam_axisX = null;
@@ -80,6 +83,7 @@ SolidParticleSystem.prototype.dispose = function() {
   this._invertedMatrix = null;
   this._rotated = null;
   this._quaternion = null;
+  this._vertex = null;
   this._yaw = null;
   this._pitch = null;
   this._roll = null;
@@ -486,7 +490,16 @@ SolidParticleSystem.prototype.setParticles = function() {
       idx = index + pt * 3;
       colidx = colorIndex + pt * 4;
       uvidx = uvIndex + pt * 2;
-      BABYLON.Vector3.TransformCoordinatesToRef(this._particle._shape[pt], this._rotMatrix, this._rotated);
+
+      this._vertex.x = this._particle._shape[pt].x;
+      this._vertex.y = this._particle._shape[pt].y;
+      this._vertex.z = this._particle._shape[pt].z;
+
+      if (this._useParticleVertex) {
+        this.updateParticleVertex(this._particle, this._vertex, pt);
+      }
+
+      BABYLON.Vector3.TransformCoordinatesToRef(this._vertex, this._rotMatrix, this._rotated);
 
       this._positions[idx]     = this._particle.position.x + this._cam_axisX.x * this._rotated.x * this._particle.scale.x + this._cam_axisY.x * this._rotated.y * this._particle.scale.y + this._cam_axisZ.x * this._rotated.z * this._particle.scale.z;      
       this._positions[idx + 1] = this._particle.position.y + this._cam_axisX.y * this._rotated.x * this._particle.scale.x + this._cam_axisY.y * this._rotated.y * this._particle.scale.y + this._cam_axisZ.y * this._rotated.z * this._particle.scale.z; 
@@ -564,27 +577,35 @@ SolidParticleSystem.prototype._quaternionToRotationMatrix = function() {
 
 // Optimizers
 SolidParticleSystem.prototype.enableParticleRotation = function() {
-  this._useParticleRotation = false;
-}; 
-
-SolidParticleSystem.prototype.disableParticleRotation = function() {
   this._useParticleRotation = true;
 }; 
 
-SolidParticleSystem.prototype.enableParticleColor = function() {
-  this._useParticleColor = false;
+SolidParticleSystem.prototype.disableParticleRotation = function() {
+  this._useParticleRotation = false;
 }; 
 
-SolidParticleSystem.prototype.disableParticleColor = function() {
+SolidParticleSystem.prototype.enableParticleColor = function() {
   this._useParticleColor = true;
 }; 
 
+SolidParticleSystem.prototype.disableParticleColor = function() {
+  this._useParticleColor = false;
+}; 
+
 SolidParticleSystem.prototype.enableParticleTexture = function() {
-  this._useParticleTexture = false;
+  this._useParticleTexture = true;
 }; 
 
 SolidParticleSystem.prototype.disableParticleTexture = function() {
-  this._useParticleTexture = true;
+  this._useParticleTexture = false;
+}; 
+
+SolidParticleSystem.prototype.enableParticleVertex = function() {
+  this._useParticleVertex = true;
+}; 
+
+SolidParticleSystem.prototype.disableParticleVertex = function() {
+  this._useParticleVertex = false;
 }; 
 
 // =======================================================================
@@ -617,10 +638,20 @@ SolidParticleSystem.prototype.updateParticle = function(particle) {
   return particle;
 };
 
+// update a vertex of a particle : can be overwritten by the user
+// will be called on each vertex particle by setParticles() :
+// ex : just set a vertex particle position
+SolidParticleSystem.prototype.updateParticleVertex = function(particle, vertex, i) {
+  return vertex;
+};
+
+
+// will be called before any other treatment by setParticles()
 SolidParticleSystem.prototype.beforeUpdateParticles = function() {
 
 };
 
+// will be called after all setParticles() treatments
 SolidParticleSystem.prototype.afterUpdateParticles = function() {
 
 };

@@ -46,9 +46,10 @@ var createScene = function(canvas, engine) {
   PS.addCubes(100, 5);
   //PS.addTetrahedrons(100, 5);
   //PS.addPolygons(100, 10, 6);
-  PS.addShape(knot, 50);
+  //PS.addShape(knot, 50);
   //PS.addShape(cyl, 100);
   //PS.addShape(plane, 100);
+  PS.addShape(sphere, 50);
   var mesh = PS.buildMesh();
 
   knot.dispose();
@@ -58,12 +59,12 @@ var createScene = function(canvas, engine) {
 
   mesh.material = mat;
   mesh.rotation.y = 0.3;
-  mesh.freezeWorldMatrix();
-  //mesh.freezeNormals();
+  //mesh.freezeWorldMatrix();
+  mesh.freezeNormals();
 
   var axis = BABYLON.Vector3.Zero();  
   var ang = 0;
-  
+  PS.enableParticleVertex();  
 
   //PS.billboard = true;
 
@@ -81,7 +82,7 @@ var createScene = function(canvas, engine) {
       var scale = Math.random() + 0.5;
       this.particles[p].position = new BABYLON.Vector3((Math.random() - 0.5) * fact, (Math.random() - 0.5) * fact, (Math.random() - 0.5) * fact);
       //this.particles[p].rotation = new BABYLON.Vector3(Math.random(), Math.random(), Math.random());
-      this.particles[p].quaternion = new BABYLON.Quaternion();
+      //this.particles[p].quaternion = new BABYLON.Quaternion();
       this.particles[p].color = new BABYLON.Color4(Math.random(), Math.random(), Math.random(), 1);
       var u = Math.floor(Math.random() * hSpriteNb)  / hSpriteNb;
       var v = Math.floor(Math.random() * vSpriteNb) / vSpriteNb;
@@ -111,10 +112,15 @@ var createScene = function(canvas, engine) {
   };
 
   PS.updateParticle = function(particle) {  
+    if (particle.shapeId == 1) {
+      //particle.rotation.x += 0.1;
+    }
     //particle.uvs = [Math.random() * .5, Math.random() *.5, Math.random() * .5 + .5, Math.random() * .5 + .5];
     //particle.rotation.y += particle.position.x / 500;;
     //particle.rotation.z +=  1 / (particle.position.z + 0.1);
     
+    /* 
+    // quaternion
     axis.x = particle.position.x;
     axis.y = particle.position.y;
     axis.z = particle.position.z;
@@ -126,6 +132,7 @@ var createScene = function(canvas, engine) {
     particle.quaternion.x = axis.x * sin;
     particle.quaternion.y = axis.y * sin;
     particle.quaternion.z = axis.z * sin;
+    */
 
     /*
     if (particle.position.y < 0) {
@@ -139,8 +146,14 @@ var createScene = function(canvas, engine) {
     particle.rotation.x += 0.05 * sign;
     particle.rotation.y += 0.008 * sign;
     */
+    ang += 0.01;
   };
 
+  PS.updateParticleVertex = function(particle, vertex, i) {
+    if (particle.shapeId == 1) {
+      vertex.x += 1.2 * Math.cos( ang * i / 1000 );
+    }
+  };
 
   // init all particle values
   PS.initParticles();
@@ -151,7 +164,7 @@ var createScene = function(canvas, engine) {
   scene.registerBeforeRender(function() {
     PS.setParticles();
     pl.position = camera.position;
-    //PS.mesh.rotation.y += 0.01;
+    PS.mesh.rotation.y += 0.001;
     //PS.mesh.rotation.x += 0.01;
   });
 

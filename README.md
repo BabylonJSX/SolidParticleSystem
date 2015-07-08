@@ -93,16 +93,23 @@ You have also access to some SPS properties :
 
 Here again, you can add your own properties like _capacity_ or _rate_ if needed.
 
-If you don't need some given features (ex : particle colors), you can disable/enable them at any time : 
+If you don't need some given features (ex : particle colors), you can disable/enable them at any time (disabling a feature will improve the performance) : 
 ```javascript
-SPS.enableParticleRotation();       // prevent from computing particle.rotation
-SPS.disableParticleRotation();      // re-activate particle.rotation computing
-SPS.enableParticleTexture();        // prevent from computing particle.uvs
-SPS.disableParticleTexture();       // re-activate particle.uvs computing
-SPS.enableParticleColor();          // prevent from computing particle.color
-SPS.disableParticleColor();         // re-activate particle.color computing
+SPS.enableParticleRotation();       // re-activates computing particle.rotation
+SPS.disableParticleRotation();      // prevents from particle.rotation computing
+SPS.enableParticleTexture();        // re-activates computing particle.uvs
+SPS.disableParticleTexture();       // prevents froms particle.uvs computing
+SPS.enableParticleColor();          // re-activates computing particle.color
+SPS.disableParticleColor();         // prevents from particle.color computing
+SPS.enableParticleVertex();          // re-activates call to custom updateParticleVertex()
+SPS.disableParticleVertex();         // prevents from calling to custom updateParticleVertex()
 ```
-All features are enabled by default. These affect the _SPS.setParticles()_ process only.   
+All features, except the call to the custom _updateParticleVertex()_ function, are enabled by default. These affect the _SPS.setParticles()_ process only.   
+Note you can also use the standard BJS mesh _freezeXXX()_ methods if the SPS mesh is immobile or if the normals aren't needed :   
+```javascript
+SPS.mesh.freezeWorldMatrix();       // prevents from re-computing the World Matrix each frame
+SPS.mesh.freezeNormals();           // prevents from re-computing the normals each frame
+```
 
 If you don't need your SPS any longer, you can dispose it to free the memory
 ```javascript
