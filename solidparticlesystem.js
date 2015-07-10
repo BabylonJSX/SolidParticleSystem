@@ -108,8 +108,12 @@ SolidParticleSystem.prototype.buildMesh  = function() {
   vertexData.positions = this._positions;
   vertexData.indices = this._indices;
   vertexData.normals = this._normals;
-  vertexData.uvs = this._uvs;
-  vertexData.colors = this._colors;
+  if (this._uvs) {
+    vertexData.uvs = this._uvs;
+  }
+  if (this._colors) {
+    vertexData.colors = this._colors;
+  }
   var mesh = new BABYLON.Mesh(name, this._scene);
   vertexData.applyToMesh(mesh, true);
   this.mesh = mesh;
@@ -358,15 +362,17 @@ SolidParticleSystem.prototype.addShape = function(mesh, nb) {
     }
     return shape;
   };
-  var uvsToSapheUV = function(uvs) {
+  var uvsToShapeUV = function(uvs) {
     var shapeUV = [];
-    for (var i = 0; i < uvs.length; i+= 2) {
-      shapeUV.push(uvs[i], uvs[i + 1]);
+      if (uvs) {
+      for (var i = 0; i < uvs.length; i+= 2) {
+        shapeUV.push(uvs[i], uvs[i + 1]);
+      }
     }
     return shapeUV;
   };
   var shape = posToShape(meshPos);
-  var shapeUV = uvsToSapheUV(meshUV);
+  var shapeUV = uvsToShapeUV(meshUV);
   // builder
   var meshBuilder = function(p, shape, positions, meshInd, indices, meshUV, uvs, meshCol, colors) { 
     var i;
@@ -374,8 +380,10 @@ SolidParticleSystem.prototype.addShape = function(mesh, nb) {
     var c = 0;
     for (i = 0; i < shape.length; i++) {
       positions.push(shape[i].x, shape[i].y, shape[i].z);
-      uvs.push(meshUV[u], meshUV[u + 1]);
-      u += 2;
+      if (meshUV) {
+        uvs.push(meshUV[u], meshUV[u + 1]);
+        u += 2;
+      }
       if (meshCol) {
         colors.push(meshCol[c], meshCol[c + 1], meshCol[c + 2], meshCol[c + 3]);
         c += 4;
